@@ -1,0 +1,68 @@
+/* ===== CSS Reset ===== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ===== Custom Properties: Monochrome + Accent ===== */
+:root {
+  /* Single accent color — cyan */
+  --color-accent: #00d4ff;
+  --color-accent-hover: #33e0ff;
+  --color-accent-dim: rgba(0, 212, 255, 0.15);
+
+  /* Monochrome scale */
+  --color-bg: #0a0a0f;
+  --color-bg-elevated: #131318;
+  --color-bg-subtle: #1a1a22;
+  --color-text-primary: #e8e8f0;
+  --color-text-secondary: #8888a0;
+  --color-border: rgba(255, 255, 255, 0.08);
+
+  /* Timeline type colors — monochrome with accent */
+  --color-education: #00d4ff;
+  --color-research: #888899;
+  --color-work: #ccccdd;
+
+  /* Typography */
+  --font-display: 'Orbitron', sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Spacing scale */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 2rem;
+  --space-xl: 4rem;
+  --space-2xl: 8rem;
+}
+
+/* ===== Base Styles ===== */
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Global focus-visible styles */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Section headings — Orbitron display font */
+h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 2.5rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}

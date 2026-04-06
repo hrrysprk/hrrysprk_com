@@ -101,7 +101,7 @@
         x={markerX}
         y={labelY}
         fill="#ff2020"
-        font-size="12"
+        font-size="18"
         font-weight="700"
         opacity="0.9"
         text-anchor="middle"

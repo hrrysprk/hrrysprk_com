@@ -36,7 +36,7 @@
       height="180"
     />
     <h1>Harpreet Singh</h1>
-    <p class="tagline">Computational Biology × Data Science × Visualization</p>
+    <p class="tagline">Computational Biologist & ML Engineer | Researcher | 3 Peer-Reviewed Publications</p>
     <nav class="social-links" aria-label="Social links">
       <a href="https://github.com/hrrysprk" target="_blank" rel="noopener noreferrer" aria-label="GitHub" class="icon-link">
         <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true">

@@ -73,6 +73,11 @@
     margin: 0;
   }
 
+  .pub-authors :global(.me) {
+    color: #b0b0c4;
+    font-weight: 700;
+  }
+
   .pub-meta {
     color: var(--color-text-secondary);
     font-size: 0.9rem;

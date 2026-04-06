@@ -9,26 +9,52 @@
 <updates>
 
 - ~~Contact section: make it like a card version, something what we have in this website: https://www.ccs.neu.edu/home/borkin/~~
-- create a terminal kind of theme like: https://sfingram.net/#
+
 - ~~the background we can do like the moving stars, as if we are staring into the universe.~~
+
 - ~~create a `dates.csv` for education, experience~~
-- create a `skill-stack.csv` to connect projects / studies / research to skills
-- **Forced Graph** for skills 
+
+- update `skill-stack.yml` to emphasize on the skills
+
+  - #### adding to the skills:
+
+    1. wet lab:
+    2. ML: pytorch, YOLO, auto encoder, DuckDB, transformers, RAG, CNN, GNN, LLMS, NLP
+    3. Coding: bash, perl, typescript
+    4. Data: DuckDB, vector embeddings
+    5. Database: postgresql, mysql, mongodb
+    6. Statistics:
+    7. break AWS into more branches
+    8. reweight the skills
+
+- Map:
+
+  - actual location
+
+- ~~KPI cards for research / education aggregation~~
+
+- ~~**Forced Graph** for skills~~
+
 - ~~**Gnatt Plot** for education / research / experience~~
+
 - **Circos Plot** for mapping skills to research / projects
+
 - ~~add map to contact~~
+
+- create a **terminal** kind of theme like: https://sfingram.net/#
+
+- ~~Better **highlight** the publication author name~~
+
 - fix the headline
-- make everything BIG!
+
+  - also in the github hrrysprk readme
+  - Linkedin
+
+- make everything **BIG!**
+
+- total research / education years **bar plot** ?
 
 </updates>
 
-#### adding to the skills:
 
-1. add branches
-2. wet lab:
-3. ML: pytorch, YOLO, auto encoder, DuckDB, 
-4. Coding: bash
-5. Database: postgresql, mysql, mongodb
-6. Statistics:
-7. break AWS into more branches
 

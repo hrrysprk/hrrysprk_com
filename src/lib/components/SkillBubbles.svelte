@@ -169,7 +169,7 @@
       />
       <text font-size="13" fill={cat.labelColor} opacity="0.85"
         font-family="var(--font-display)" font-weight="600"
-        letter-spacing="0.04em" style="text-transform: uppercase;">
+        letter-spacing="0.04em" dy="-8" style="text-transform: uppercase;">
         <textPath href="#branch-{i}" startOffset="45%" text-anchor="middle">
           {cat.name}
         </textPath>

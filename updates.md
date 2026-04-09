@@ -8,18 +8,30 @@
 
 <updates>
 
-- ~~Contact section: make it like a card version, something what we have in this website: https://www.ccs.neu.edu/home/borkin/~~
+- **SEO**
+- <b> awards section </b>
+- update **ABOUT**
+- <b> Research & Software </b>
+- Try different backgrounds
+- resume download option
 
-- ~~the background we can do like the moving stars, as if we are staring into the universe.~~
+- **HERO** like Parinaz Kassemi
 
-- ~~create a `dates.csv` for education, experience~~
+- interactive project flowchart diagrams: genBrowser / chromApipe / spaceGen / policyLens
+
+- **GNATT plot:**
+
+  - add a black rectangle behind the label
+  - make `relocate to` smaller
+  - make the disclaimer more prominent
+  - bold dahsed line
 
 - update `skill-stack.yml` to emphasize on the skills
 
   - #### adding to the skills:
 
     1. wet lab:
-    2. ML: pytorch, YOLO, auto encoder, DuckDB, transformers, RAG, CNN, GNN, LLMS, NLP
+    2. ML: pytorch, YOLO, auto encoder, DuckDB, transformers, RAG, CNN, GNN, LLMS, NLP, nltk
     3. Coding: bash, perl, typescript
     4. Data: DuckDB, vector embeddings
     5. Database: postgresql, mysql, mongodb
@@ -31,28 +43,32 @@
 
   - actual location
 
-- ~~KPI cards for research / education aggregation~~
+- <b> CONTACT </b>
 
-- ~~**Forced Graph** for skills~~
+  - make bigger
+  - add a floating contact mini section always for easy access
+  - grey + translucent
 
-- ~~**Gnatt Plot** for education / research / experience~~
+- <b> credits </b> section at the bottom about the webpage development.
 
 - **Circos Plot** for mapping skills to research / projects
 
-- ~~add map to contact~~
-
 - create a **terminal** kind of theme like: https://sfingram.net/#
-
-- ~~Better **highlight** the publication author name~~
 
 - fix the headline
 
   - also in the github hrrysprk readme
-  - Linkedin
 
 - make everything **BIG!**
 
-- total research / education years **bar plot** ?
+- <b> TOP BAR </b>
+
+  - add **spark** logo next to HS
+  - more transparent
+  
+- BIG HARPREET at the bottom of the page
+
+- 
 
 </updates>
 

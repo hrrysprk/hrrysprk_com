@@ -1,5 +1,23 @@
 <script lang="ts">
   import { publications } from '$lib/data/publications';
+
+  const awards = [
+    {
+      title: "DST-INSPIRE Fellowship, Bachelor's (2012-2015)",
+      details:
+        'Awarded by the Department of Science and Technology, Government of India, to the top 1% of national science students'
+    },
+    {
+      title: "DST-INSPIRE Fellowship, Master's (2015-2017)",
+      details:
+        "Continued fellowship recognition through Master's studies, granted to exceptional science students ranked in the top 1% nationally"
+    },
+    {
+      title: 'Government of India Research Grant (2019)',
+      details:
+        'Competitive research grant awarded for independent study on 3D genome organization and its regulatory impact on gene expression'
+    }
+  ];
 </script>
 
 <section id="publications">
@@ -16,6 +34,16 @@
             View Publication
           </a>
         </p>
+      </li>
+    {/each}
+  </ol>
+
+  <h2 class="subheading">AWARDS</h2>
+  <ol class="awards-list">
+    {#each awards as award}
+      <li class="award-item">
+        <p class="pub-title">{award.title}</p>
+        <p class="pub-authors">{award.details}</p>
       </li>
     {/each}
   </ol>
@@ -37,6 +65,37 @@
     flex-direction: column;
     gap: var(--space-lg);
     counter-reset: pub-counter;
+  }
+
+  .subheading {
+    color: #ffffff;
+    margin-top: var(--space-xl);
+    margin-bottom: var(--space-md);
+  }
+
+  .awards-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    counter-reset: award-counter;
+  }
+
+  .award-item {
+    counter-increment: award-counter;
+    padding-left: var(--space-lg);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .award-item::before {
+    content: counter(award-counter) ".";
+    position: absolute;
+    left: 0;
+    color: rgba(221, 200, 208, 0.6);
+    font-weight: 700;
   }
 
   .pub-item {

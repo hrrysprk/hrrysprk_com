@@ -6,6 +6,7 @@
   import Publications from '$lib/components/Publications.svelte';
   import Timeline from '$lib/components/Timeline.svelte';
   import Contact from '$lib/components/Contact.svelte';
+  import Credits from '$lib/components/Credits.svelte';
 </script>
 
 <Hero />
@@ -26,18 +27,35 @@
     <Projects />
   </div>
 
-  <!-- Publications — narrower left -->
+  <!-- Timeline — wider left -->
+  <div class="col-7" style="padding: clamp(1.25rem, 2.5vw, 2rem);">
+    <Timeline />
+  </div>
+
+  <!-- Publications — narrower right -->
   <div class="bento-card card-wine col-5">
     <Publications />
   </div>
 
-  <!-- Timeline — wider right -->
-  <div class="bento-card card-stone col-7">
-    <Timeline />
-  </div>
-
-  <!-- Contact — full width, rose CTA -->
-  <div class="bento-card card-rose col-12">
+  <!-- Contact — same width as timeline section -->
+  <div class="bento-card card-rose col-7 contact-lift">
     <Contact />
   </div>
+
+  <!-- Credits — bottom right -->
+  <div class="col-5" style="padding: clamp(1.25rem, 2.5vw, 2rem);">
+    <Credits />
+  </div>
 </div>
+
+<style>
+  .contact-lift {
+    margin-top: -8rem;
+  }
+
+  @media (max-width: 1024px) {
+    .contact-lift {
+      margin-top: 0;
+    }
+  }
+</style>

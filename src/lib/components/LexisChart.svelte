@@ -17,7 +17,7 @@
   const maxYear = 2027;
   const barHeight = 22;
   const barGap = 6;
-  const margin = { top: 60, right: 20, bottom: 70, left: 220 };
+  const margin = { top: 60, right: 2, bottom: 70, left: 170 };
 
   // Sort entries by start date
   const sorted = [...lexisEntries].sort(
@@ -85,6 +85,7 @@
     <!-- Marker lines (COVID, relocation) — vertical dashed with inline label -->
     {#each lexisMarkers as marker}
       {@const markerX = xScale(marker.date)}
+      {@const isCanadaMarker = marker.label.includes('CANADA')}
       {@const labelY = margin.top + 40 - (marker.label.includes('CANADA') ? 48 : 24)}
       <!-- Top dashes — from chart top to label -->
       <line
@@ -97,12 +98,23 @@
         stroke-dasharray="6 4"
         opacity="0.7"
       />
+      {#if isCanadaMarker}
+        <rect
+          x={markerX - 102}
+          y={labelY - 12}
+          width="204"
+          height="24"
+          rx="4"
+          fill="rgba(0, 0, 0, 0.55)"
+          transform="rotate(-90, {markerX}, {labelY})"
+        />
+      {/if}
       <!-- Label (rotated vertical) -->
       <text
         x={markerX}
         y={labelY}
         fill="#ff2020"
-        font-size="18"
+        font-size={isCanadaMarker ? '17' : '18'}
         font-weight="700"
         opacity="0.9"
         text-anchor="middle"
@@ -178,12 +190,16 @@
 
 <style>
   .gantt-wrapper {
-    margin-top: var(--space-xl);
+    margin-top: var(--space-md);
   }
 
   h3 {
     color: var(--color-text-primary);
-    font-size: 1.25rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1rem, 1.8vw, 1.4rem);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
     margin-bottom: var(--space-md);
   }
 
@@ -215,10 +231,11 @@
   }
 
   .disclaimer {
-    color: var(--color-text-secondary);
-    font-size: 0.85rem;
-    font-style: italic;
-    opacity: 0.6;
-    margin-top: var(--space-sm);
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 0.92rem;
+    font-style: normal;
+    font-weight: 500;
+    opacity: 0.95;
+    margin-top: -0.35rem;
   }
 </style>

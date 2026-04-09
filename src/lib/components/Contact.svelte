@@ -76,31 +76,36 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: var(--space-lg);
+    align-items: start;
   }
 
   .info-col {
     display: flex;
     flex-direction: column;
-    gap: var(--space-md);
-    justify-content: center;
+    gap: 1.15rem;
+    justify-content: flex-start;
   }
 
   .map-col {
     border-radius: 8px;
     overflow: hidden;
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 1.08 / 1;
+    width: 104%;
+    justify-self: end;
+    align-self: start;
+    margin-top: -3rem;
   }
 
   .card-row {
     display: flex;
     align-items: center;
-    gap: var(--space-md);
-    min-height: 44px;
+    gap: 1rem;
+    min-height: 58px;
   }
 
   .icon-circle {
-    width: 40px;
-    height: 40px;
+    width: 52px;
+    height: 52px;
     border-radius: 50%;
     background: rgba(0, 0, 0, 0.25);
     display: flex;
@@ -118,13 +123,13 @@
 
   .label {
     color: rgba(255, 255, 255, 0.95);
-    font-size: 0.95rem;
+    font-size: 1.05rem;
     font-weight: 600;
   }
 
   .value {
     color: rgba(255, 255, 255, 0.75);
-    font-size: 0.9rem;
+    font-size: 1rem;
   }
 
   .link {
@@ -141,6 +146,12 @@
   @media (max-width: 768px) {
     .inner {
       grid-template-columns: 1fr;
+    }
+
+    .map-col {
+      width: 100%;
+      margin-top: 0;
+      aspect-ratio: 1 / 1;
     }
   }
 </style>

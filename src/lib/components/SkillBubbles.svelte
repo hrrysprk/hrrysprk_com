@@ -14,11 +14,11 @@
   const ratingToRadius: Record<number, number> = { 1: 18, 2: 24, 3: 30, 4: 38, 5: 46 };
 
   const clusterPositions = [
-    { xFrac: 0.42, yFrac: 0.01 },  // Programming — top centre-left
+    { xFrac: 0.43, yFrac: 0.03 },  // Programming — nudged slightly toward center
     { xFrac: 0.82, yFrac: 0.12 },  // Bioinformatics
     { xFrac: 0.96, yFrac: 0.55 },  // Genomic Resources — right middle
-    { xFrac: 0.68, yFrac: 0.85 },  // ML & Data
-    { xFrac: 0.12, yFrac: 0.20 },  // Cloud & Infra — left upper
+    { xFrac: 0.67, yFrac: 0.83 },  // ML & Data — nudged slightly toward center
+    { xFrac: 0.14, yFrac: 0.22 },  // Cloud & Infra — nudged slightly toward center
     { xFrac: 0.10, yFrac: 0.55 },  // Visualization — left middle
     { xFrac: 0.22, yFrac: 0.85 },  // Statistics — bottom left
   ];
@@ -53,6 +53,13 @@
         y: pad + (h - pad * 2) * pos.yFrac
       };
     });
+  }
+
+  function getLabelStartOffset(name: string) {
+    // Pull these two labels toward the center so text avoids nearby bubbles.
+    if (name === 'Programming' || name === 'Cloud & Infra') return '62%';
+    if (name === 'Bioinformatics') return '42%';
+    return '45%';
   }
 
   let simulation: any;
@@ -170,7 +177,7 @@
       <text font-size="13" fill={cat.labelColor} opacity="0.85"
         font-family="var(--font-display)" font-weight="600"
         letter-spacing="0.04em" dy="-8" style="text-transform: uppercase;">
-        <textPath href="#branch-{i}" startOffset="45%" text-anchor="middle">
+        <textPath href="#branch-{i}" startOffset={getLabelStartOffset(cat.name)} text-anchor="middle">
           {cat.name}
         </textPath>
       </text>

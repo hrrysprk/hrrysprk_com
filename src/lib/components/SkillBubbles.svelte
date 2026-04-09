@@ -5,22 +5,22 @@
 
   let svgEl: SVGSVGElement;
   let width = $state(1000);
-  let height = $state(750);
+  let height = $state(780);
   let nodes: any[] = $state([]);
   let mouseX = $state(-9999);
   let mouseY = $state(-9999);
 
-  const pad = 60;
+  const pad = 50;
   const ratingToRadius: Record<number, number> = { 1: 18, 2: 24, 3: 30, 4: 38, 5: 46 };
 
   const clusterPositions = [
-    { xFrac: 0.60, yFrac: 0.01 },
-    { xFrac: 0.85, yFrac: 0.20 },
-    { xFrac: 0.88, yFrac: 0.55 },
-    { xFrac: 0.72, yFrac: 0.90 },
-    { xFrac: 0.12, yFrac: 0.20 },
-    { xFrac: 0.10, yFrac: 0.55 },
-    { xFrac: 0.22, yFrac: 0.85 },
+    { xFrac: 0.42, yFrac: 0.01 },  // Programming — top centre-left
+    { xFrac: 0.82, yFrac: 0.12 },  // Bioinformatics
+    { xFrac: 0.96, yFrac: 0.55 },  // Genomic Resources — right middle
+    { xFrac: 0.68, yFrac: 0.85 },  // ML & Data
+    { xFrac: 0.12, yFrac: 0.20 },  // Cloud & Infra — left upper
+    { xFrac: 0.10, yFrac: 0.55 },  // Visualization — left middle
+    { xFrac: 0.22, yFrac: 0.85 },  // Statistics — bottom left
   ];
 
   function buildNodes(w: number, h: number) {
@@ -77,7 +77,7 @@
     function handleResize() {
       if (svgEl?.parentElement) {
         width = svgEl.parentElement.clientWidth;
-        height = Math.max(650, width * 0.7);
+        height = Math.max(680, width * 0.78);
       }
     }
     handleResize();
@@ -194,7 +194,7 @@
           stroke={node.color} stroke-width="1.5" stroke-opacity="1" />
         <text x={node.x} y={node.y}
           fill="var(--color-text-primary)"
-          font-size={node.r > 32 ? '11' : node.r > 22 ? '9' : '7.5'}
+          font-size={node.r > 32 ? '13' : node.r > 22 ? '11' : '9.5'}
           text-anchor="middle" dominant-baseline="middle"
           font-family="var(--font-mono)" style="pointer-events: none;"
         >{node.skill}</text>
@@ -204,6 +204,6 @@
 </div>
 
 <style>
-  .bubbles-wrapper { width: 100%; overflow: visible; padding: 20px 0; }
+  .bubbles-wrapper { width: 100%; overflow: visible; padding: 0; }
   svg { width: 100%; height: auto; display: block; overflow: visible; }
 </style>

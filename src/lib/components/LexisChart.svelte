@@ -17,7 +17,7 @@
   const maxYear = 2027;
   const barHeight = 22;
   const barGap = 6;
-  const margin = { top: 60, right: 20, bottom: 50, left: 220 };
+  const margin = { top: 60, right: 20, bottom: 70, left: 220 };
 
   // Sort entries by start date
   const sorted = [...lexisEntries].sort(
@@ -73,11 +73,12 @@
       />
       <text
         x={xScale(`${year}-01-01`)}
-        y={chartHeight - margin.bottom + 20}
+        y={chartHeight - margin.bottom + 8}
         fill="#8888a0"
         font-size="11"
-        text-anchor="middle"
+        text-anchor="end"
         font-family="var(--font-mono)"
+        transform="rotate(-45, {xScale(`${year}-01-01`)}, {chartHeight - margin.bottom + 8})"
       >{year}</text>
     {/each}
 

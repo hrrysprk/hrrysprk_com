@@ -1,6 +1,6 @@
-<section id="contact" class="contact">
+<section id="contact">
   <h2>Contact</h2>
-  <div class="card">
+  <div class="inner">
     <div class="info-col">
       <div class="card-row">
         <div class="icon-circle">
@@ -46,17 +46,6 @@
           <a href="https://linkedin.com/in/hrrysprk" target="_blank" rel="noopener noreferrer" class="value link">linkedin.com/in/hrrysprk</a>
         </div>
       </div>
-      <div class="card-row">
-        <div class="icon-circle">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
-          </svg>
-        </div>
-        <div class="info">
-          <span class="label">Website</span>
-          <a href="https://hrrysprk.com" class="value link">hrrysprk.com</a>
-        </div>
-      </div>
     </div>
     <div class="map-col">
       <iframe
@@ -64,7 +53,7 @@
         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d83327.34088292407!2d-123.19394!3d49.257784!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x548673f143a94fb3%3A0xbb9196ea9b81f38b!2sVancouver%2C%20BC!5e0!3m2!1sen!2sca!4v1700000000000"
         width="100%"
         height="100%"
-        style="border:0; border-radius: 8px; min-height: 280px;"
+        style="border:0; width:100%; height:100%; display:block;"
         allowfullscreen
         loading="lazy"
         referrerpolicy="no-referrer-when-downgrade"
@@ -74,21 +63,16 @@
 </section>
 
 <style>
-  .contact {
-    padding: var(--space-xl) var(--space-lg);
-    max-width: 900px;
-    margin: 0 auto;
+  section {
+    height: 100%;
   }
 
   h2 {
+    color: #ffffff;
     margin-bottom: var(--space-lg);
   }
 
-  .card {
-    background: var(--color-bg-elevated);
-    border: 1px solid var(--color-border, rgba(255,255,255,0.08));
-    border-radius: 12px;
-    padding: var(--space-lg);
+  .inner {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: var(--space-lg);
@@ -104,7 +88,7 @@
   .map-col {
     border-radius: 8px;
     overflow: hidden;
-    min-height: 280px;
+    aspect-ratio: 1 / 1;
   }
 
   .card-row {
@@ -118,12 +102,12 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: var(--color-bg-subtle, #1a1a22);
+    background: rgba(0, 0, 0, 0.25);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    color: var(--color-accent);
+    color: #ffffff;
   }
 
   .info {
@@ -133,34 +117,30 @@
   }
 
   .label {
-    color: var(--color-text-primary);
+    color: rgba(255, 255, 255, 0.95);
     font-size: 0.95rem;
     font-weight: 600;
   }
 
   .value {
-    color: var(--color-text-secondary);
+    color: rgba(255, 255, 255, 0.75);
     font-size: 0.9rem;
   }
 
   .link {
-    color: var(--color-text-secondary);
+    color: rgba(255, 255, 255, 0.75);
     text-decoration: none;
     transition: color 0.2s ease;
   }
 
   .link:hover,
   .link:focus-visible {
-    color: var(--color-accent);
+    color: #ffffff;
   }
 
   @media (max-width: 768px) {
-    .card {
+    .inner {
       grid-template-columns: 1fr;
-    }
-
-    .map-col {
-      min-height: 220px;
     }
   }
 </style>

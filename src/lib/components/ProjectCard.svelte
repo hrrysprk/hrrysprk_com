@@ -56,68 +56,78 @@
 <style>
   .card {
     background: var(--color-bg-elevated);
-    border-radius: 12px;
+    border-radius: 10px;
     overflow: hidden;
     border: 1px solid transparent;
     transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
     outline: none;
+    display: flex;
+    flex-direction: column;
   }
 
   .card:hover,
   .card:focus-visible {
     border-color: var(--color-accent);
-    box-shadow: 0 4px 24px rgba(0, 212, 255, 0.15);
+    box-shadow: 0 4px 20px rgba(0, 212, 255, 0.12);
     transform: translateY(-2px);
   }
 
   .thumbnail {
     width: 100%;
-    height: 180px;
+    height: 120px;
     object-fit: cover;
     display: block;
   }
 
   .placeholder-img {
     width: 100%;
-    height: 180px;
+    height: 120px;
     background: var(--color-bg-subtle);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 3rem;
+    font-size: 2rem;
     font-weight: 700;
     color: var(--color-text-primary);
   }
 
   .content {
-    padding: var(--space-md);
+    padding: 0.65rem 0.75rem 0.75rem;
     display: flex;
     flex-direction: column;
-    gap: var(--space-sm);
+    gap: 0.35rem;
+    flex: 1;
   }
 
   .title {
-    font-size: 1.125rem;
+    font-size: 0.875rem;
+    font-weight: 600;
     color: var(--color-text-primary);
     margin: 0;
+    line-height: 1.3;
   }
 
   .description {
-    font-size: 0.875rem;
+    font-size: 0.78rem;
     color: var(--color-text-secondary);
     margin: 0;
-    line-height: 1.5;
+    line-height: 1.45;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .stack {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-xs);
+    gap: 3px;
+    margin-top: 2px;
   }
 
   .tag {
-    font-size: 0.75rem;
-    padding: 2px 8px;
+    font-size: 0.65rem;
+    padding: 1px 6px;
     border-radius: 999px;
     background: var(--color-bg);
     color: var(--color-accent);
@@ -127,12 +137,13 @@
 
   .links {
     display: flex;
-    gap: var(--space-md);
-    margin-top: var(--space-xs);
+    gap: var(--space-sm);
+    margin-top: auto;
+    padding-top: 0.35rem;
   }
 
   .link {
-    font-size: 0.875rem;
+    font-size: 0.75rem;
     color: var(--color-accent);
     text-decoration: none;
     transition: color 0.2s ease;
@@ -142,14 +153,5 @@
   .link:focus-visible {
     color: var(--color-accent-hover);
     text-decoration: underline;
-  }
-
-  @media (max-width: 767px) {
-    .link {
-      min-height: 44px;
-      min-width: 44px;
-      display: inline-flex;
-      align-items: center;
-    }
   }
 </style>

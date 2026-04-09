@@ -66,3 +66,53 @@ h2 {
   letter-spacing: 0.03em;
   text-transform: uppercase;
 }
+
+/* ===== Bento grid ===== */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1rem;
+  padding: 0 1rem 4rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Card base */
+.bento-card {
+  border-radius: 12px;
+  padding: clamp(1.25rem, 2.5vw, 2rem);
+  overflow: hidden;
+  position: relative;
+}
+
+.bento-card h2 {
+  font-size: clamp(1rem, 1.8vw, 1.4rem);
+  letter-spacing: 0.05em;
+}
+
+/* Column spans */
+.col-12 { grid-column: span 12; }
+.col-9  { grid-column: span 9; }
+.col-8  { grid-column: span 8; }
+.col-7  { grid-column: span 7; }
+.col-6  { grid-column: span 6; }
+.col-5  { grid-column: span 5; }
+.col-4  { grid-column: span 4; }
+.col-3  { grid-column: span 3; }
+
+/* Card colors */
+.card-olive    { background: #b06a1e; }  /* About — burnt orange */
+.card-slate    { background: #0f3d5c; }  /* Skills — deep navy */
+.card-teal     { background: #1e7a5a; }  /* Projects — emerald */
+.card-wine     { background: #8a2860; }  /* Publications — magenta */
+.card-stone    { background: #1e2d6b; }  /* Timeline — deep indigo */
+.card-rose     { background: #c03848; }  /* Contact — coral red */
+
+@media (max-width: 1024px) {
+  .col-9, .col-8, .col-7, .col-5, .col-4, .col-3 { grid-column: span 6; }
+}
+
+@media (max-width: 768px) {
+  .bento-grid { grid-template-columns: 1fr; gap: 0.75rem; padding: 0 0.75rem 3rem; }
+  .col-12, .col-9, .col-8, .col-7, .col-6, .col-5, .col-4, .col-3 { grid-column: span 1; }
+}

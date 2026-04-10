@@ -14,10 +14,7 @@
     'sleep-disorder-analysis',
     'behavioral-patterns'
   ];
-  let imageFiles = $state<string[]>([]);
-  let imageBasePath = $state('/images');
-  let imageVersion = $state('1');
-  const thumbnailPatternByProjectId: Record<string, string> = {
+  const thumbnailByProjectId: Record<string, string> = {
     genbrowser: 'genBrowser.png',
     chromapipe: 'chromApipe.png',
     spacegen: 'spaceGen.png',
@@ -27,7 +24,7 @@
     'web-dashboard-3d-genome': '3D_genome_organization.png',
     'sleep-disorder-analysis': 'sleep_disorder.png',
     'behavioral-patterns': 'personality_vs_academics_networks.png',
-    'cne-gene-expression': 'CNE*'
+    'cne-gene-expression': 'CNE.png'
   };
 
   const filteredProjects = $derived.by(() => {
@@ -58,69 +55,13 @@
     window.history.replaceState({}, '', url);
   }
 
-  function normalizedTokens(projectId: string, title: string): string[] {
-    const idTokens = projectId.split(/[-_]/g);
-    const titleTokens = title.toLowerCase().split(/[^a-z0-9]+/g);
-    return [...new Set([...idTokens, ...titleTokens])]
-      .map((t) => t.trim().toLowerCase())
-      .filter((t) => t.length >= 3);
-  }
-
-  function escapeRegex(value: string): string {
-    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  }
-
-  function wildcardToRegex(pattern: string): RegExp {
-    const escaped = pattern
-      .split('*')
-      .map((part) => escapeRegex(part))
-      .join('.*');
-    return new RegExp(`^${escaped}(\\.[a-z0-9]+)?$`, 'i');
-  }
-
-  function resolveMappedThumbnail(projectId: string): string | null {
-    const pattern = thumbnailPatternByProjectId[projectId];
-    if (!pattern || !imageFiles.length) return null;
-    const regex = wildcardToRegex(pattern);
-    const match = imageFiles.find((file) => regex.test(file));
-    return match ? `${imageBasePath}/${match}?v=${imageVersion}` : null;
-  }
-
-  function resolveThumbnail(projectId: string, title: string, fallback: string): string {
-    if (!imageFiles.length) {
-      return fallback;
-    }
-    const mapped = resolveMappedThumbnail(projectId);
-    if (mapped) return mapped;
-    const tokens = normalizedTokens(projectId, title);
-    let bestMatch = '';
-    let bestScore = -1;
-    for (const file of imageFiles) {
-      const name = file.toLowerCase();
-      const score = tokens.reduce((sum, token) => sum + (name.includes(token) ? 1 : 0), 0);
-      if (score > bestScore || (score === bestScore && score > 0 && file.length < bestMatch.length)) {
-        bestScore = score;
-        bestMatch = file;
-      }
-    }
-    if (bestScore > 0) return `${imageBasePath}/${bestMatch}?v=${imageVersion}`;
-    return fallback;
+  function resolveThumbnail(projectId: string): string {
+    const filename = thumbnailByProjectId[projectId];
+    if (filename) return `${base}/images/${filename}`;
+    return `${base}/images/${projectId}.png`;
   }
 
   onMount(() => {
-    fetch(`${base}/api/image-index`)
-      .then((res) => res.json())
-      .then((data) => {
-        imageFiles = Array.isArray(data?.files) ? data.files : [];
-        imageBasePath = typeof data?.basePath === 'string' ? data.basePath : '/images';
-        imageVersion = typeof data?.version === 'string' ? data.version : Date.now().toString();
-      })
-      .catch(() => {
-        imageFiles = [];
-        imageBasePath = '/images';
-        imageVersion = Date.now().toString();
-      });
-
     const url = new URL(window.location.href);
     const fromUrl = url.searchParams.get('projectTag');
     if (fromUrl && allTags.includes(fromUrl)) {
@@ -151,7 +92,7 @@
       <div class="card-shell featured-shell">
         <ProjectCard
           {project}
-          thumbnailSrc={resolveThumbnail(project.id, project.title, project.thumbnail)}
+          thumbnailSrc={resolveThumbnail(project.id)}
           variant="featured"
         />
       </div>
@@ -164,7 +105,7 @@
       <div class="card-shell secondary-shell">
         <ProjectCard
           {project}
-          thumbnailSrc={resolveThumbnail(project.id, project.title, project.thumbnail)}
+          thumbnailSrc={resolveThumbnail(project.id)}
           variant="secondary"
         />
       </div>

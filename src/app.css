@@ -101,12 +101,12 @@ h2 {
 .col-3  { grid-column: span 3; }
 
 /* Card colors */
-.card-olive    { background: #b06a1e; }  /* About — burnt orange */
-.card-slate    { background: #0f3d5c; }  /* Skills — deep navy */
-.card-teal     { background: #1e7a5a; }  /* Projects — emerald */
-.card-wine     { background: #8a2860; }  /* Publications — magenta */
-.card-stone    { background: #1e2d6b; }  /* Timeline — deep indigo */
-.card-rose     { background: #c03848; }  /* Contact — coral red */
+.card-olive    { background: rgba(176, 106, 30, 0.62); }  /* About — burnt orange */
+.card-slate    { background: rgba(15, 61, 92, 0.62); }   /* Skills — deep navy */
+.card-teal     { background: rgba(30, 122, 90, 0.62); }  /* Projects — emerald */
+.card-wine     { background: rgba(138, 40, 96, 0.62); }  /* Publications — magenta */
+.card-stone    { background: rgba(30, 45, 107, 0.62); }  /* Timeline — deep indigo */
+.card-rose     { background: rgba(192, 56, 72, 0.62); }  /* Contact — coral red */
 
 @media (max-width: 1024px) {
   .col-9, .col-8, .col-7, .col-5, .col-4, .col-3 { grid-column: span 6; }

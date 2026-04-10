@@ -191,7 +191,7 @@
 
 <style>
   .gantt-wrapper {
-    margin-top: var(--space-md);
+    margin-top: var(--space-lg);
   }
 
   h3 {

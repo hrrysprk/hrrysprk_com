@@ -113,7 +113,7 @@
   .role {
     font-family: 'Inter', var(--font-body), sans-serif;
     font-weight: 900;
-    font-size: clamp(2.65rem, 9.2vw, 6.8rem);
+    font-size: clamp(2.8rem, 9.6vw, 7.1rem);
     line-height: 0.9;
     letter-spacing: -0.045em;
     text-transform: uppercase;
@@ -147,7 +147,7 @@
   .role-researcher {
     font-family: 'Inter', var(--font-body), sans-serif;
     font-weight: 900;
-    font-size: clamp(3.05rem, 10.4vw, 7.8rem);
+    font-size: clamp(3.2rem, 10.8vw, 8.1rem);
     line-height: 0.9;
     letter-spacing: -0.045em;
     text-transform: uppercase;
@@ -167,7 +167,7 @@
     align-self: flex-end;
     width: 100%;
     padding: 0 clamp(0.7rem, 1.6vw, 1.6rem) clamp(2.8rem, 7.8vh, 5.6rem) clamp(0.4rem, 1vw, 1rem);
-    transform: translateY(0.8rem);
+    transform: translateY(1.05rem);
   }
 
   .name-line {
@@ -188,21 +188,23 @@
   }
 
   .surname {
-    font-size: clamp(5.2rem, 17.8vw, 15.4rem);
+    font-size: clamp(5.4rem, 18.3vw, 15.9rem);
     line-height: 0.75;
     letter-spacing: -0.05em;
+    position: relative;
+    top: 0.2rem;
     text-align: right;
     transform-origin: right top;
     align-self: flex-end;
   }
 
   .given {
-    font-size: clamp(5rem, 18.5vw, 16.8rem);
+    font-size: clamp(5.2rem, 19vw, 17.2rem);
     line-height: 0.78;
     letter-spacing: -0.045em;
     margin-top: 0;
     position: relative;
-    top: 1rem;
+    top: 1.45rem;
     align-self: flex-end;
     text-align: right;
     transform: scaleX(0.62) scaleY(1.26);

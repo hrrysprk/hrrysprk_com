@@ -13,12 +13,12 @@
 
 <div class="bento-grid">
   <!-- About -->
-  <div class="bento-card card-olive col-3">
+  <div class="bento-card card-olive col-4">
     <About />
   </div>
 
   <!-- Skills — no background box -->
-  <div class="col-9" style="padding: clamp(1.25rem, 2.5vw, 2rem);">
+  <div class="col-8" style="padding: clamp(1.25rem, 2.5vw, 2rem);">
     <Skills />
   </div>
 
@@ -50,7 +50,7 @@
 
 <style>
   .contact-lift {
-    margin-top: calc(-8rem + 4.6rem);
+    margin-top: 0;
     align-self: start;
   }
 

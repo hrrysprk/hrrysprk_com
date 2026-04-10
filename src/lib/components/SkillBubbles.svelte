@@ -15,9 +15,9 @@
 
   const clusterPositions = [
     { xFrac: 0.43, yFrac: 0.03 },  // Programming — nudged slightly toward center
-    { xFrac: 0.82, yFrac: 0.12 },  // Bioinformatics
+    { xFrac: 0.86, yFrac: 0.10 },  // Bioinformatics — moved farther outward
     { xFrac: 0.96, yFrac: 0.55 },  // Genomic Resources — right middle
-    { xFrac: 0.67, yFrac: 0.83 },  // ML & Data — nudged slightly toward center
+    { xFrac: 0.72, yFrac: 0.89 },  // ML & Data — moved farther outward
     { xFrac: 0.14, yFrac: 0.22 },  // Cloud & Infra — nudged slightly toward center
     { xFrac: 0.10, yFrac: 0.55 },  // Visualization — left middle
     { xFrac: 0.22, yFrac: 0.85 },  // Statistics — bottom left

@@ -27,7 +27,7 @@ export const projects: Project[] = [
       'v1.0 GitHub release with complete documentation'
     ],
     stack: ['Nextflow DSL2', 'Python', 'AWS Batch', 'ECR', 'S3', 'Wave', 'Fusion', 'Docker', 'CloudWatch'],
-    tags: ['bioinformatics', 'cloud', 'pipelines'],
+    tags: ['bioinformatics', 'cloud', 'pipelines', 'genomics'],
     thumbnail: '/images/chromApipe.png',
     repoUrl: 'https://github.com/hrrysprk/chromApipe',
     miniViz: { type: 'bars', values: [15, 28, 34, 52, 49, 61], accent: '#35b779' },
@@ -43,7 +43,7 @@ export const projects: Project[] = [
       'MuData gold layer enables future snATAC-seq integration without refactoring'
     ],
     stack: ['Python', 'Scanpy', 'AnnData', 'MuData', 'scikit-learn', 'XGBoost', 'MLflow', 'PyArrow'],
-    tags: ['machine-learning', 'single-cell', 'bioinformatics'],
+    tags: ['machine-learning', 'single-cell', 'bioinformatics', 'genomics'],
     thumbnail: '/images/spaceGen.png',
     repoUrl: 'https://github.com/hrrysprk/spaceGen',
     miniViz: { type: 'line', values: [18, 22, 29, 35, 47, 52, 66], accent: '#fde725' },

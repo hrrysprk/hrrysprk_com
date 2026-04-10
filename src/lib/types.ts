@@ -1,11 +1,19 @@
+export interface MiniVizConfig {
+  type: 'line' | 'bars';
+  values: number[];
+  accent?: string;
+}
+
 export interface Project {
   id: string;
   title: string;
   description: string;
   stack: string[];
+  tags: string[];
   thumbnail: string;       // path relative to /static/images/
   liveUrl?: string;        // optional
   repoUrl?: string;        // optional
+  miniViz: MiniVizConfig;
   primary: boolean;        // true for the 4 featured projects
 }
 

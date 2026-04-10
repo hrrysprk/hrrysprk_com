@@ -1,34 +1,96 @@
 <script lang="ts">
+  import { fade } from 'svelte/transition';
   import type { Project } from '$lib/types';
+  import ProjectMiniViz from './ProjectMiniViz.svelte';
 
-  let { project }: { project: Project } = $props();
+  let { project, thumbnailSrc = project.thumbnail }: { project: Project; thumbnailSrc?: string } = $props();
 
   let imgFailed = $state(false);
+  let hovered = $state(false);
+  let visible = $state(false);
+  let tiltX = $state(0);
+  let tiltY = $state(0);
+
+  function observeVisibility(node: HTMLElement) {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting;
+      },
+      { threshold: 0.25 }
+    );
+    observer.observe(node);
+    return {
+      destroy() {
+        observer.disconnect();
+      }
+    };
+  }
 
   function handleImageError() {
     imgFailed = true;
   }
+
+  function handleMouseMove(event: MouseEvent) {
+    const el = event.currentTarget as HTMLElement;
+    const rect = el.getBoundingClientRect();
+    const px = (event.clientX - rect.left) / rect.width;
+    const py = (event.clientY - rect.top) / rect.height;
+    tiltY = (px - 0.5) * 6;
+    tiltX = (0.5 - py) * 5;
+  }
+
+  function resetTilt() {
+    hovered = false;
+    tiltX = 0;
+    tiltY = 0;
+  }
 </script>
 
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-<article class="card" tabindex="0">
-  {#if imgFailed}
-    <div class="placeholder-img" aria-hidden="true">
-      <span>{project.title[0]}</span>
-    </div>
-  {:else}
-    <img
-      src={project.thumbnail}
-      alt="{project.title} project thumbnail"
-      loading="lazy"
-      class="thumbnail"
-      onerror={handleImageError}
-    />
-  {/if}
+<article
+  class="card"
+  tabindex="0"
+  use:observeVisibility
+  onmouseenter={() => hovered = true}
+  onmouseleave={resetTilt}
+  onmousemove={handleMouseMove}
+  onfocus={() => hovered = true}
+  onblur={resetTilt}
+  style="transform: perspective(950px) rotateX({tiltX}deg) rotateY({tiltY}deg) translateY({hovered ? '-3px' : '0'});"
+>
+  <div class="media">
+    {#if imgFailed}
+      <div class="placeholder-img" aria-hidden="true">
+        <span>{project.title[0]}</span>
+      </div>
+    {:else}
+      <img
+        src={thumbnailSrc}
+        alt="{project.title} project thumbnail"
+        loading="lazy"
+        class="thumbnail"
+        onerror={handleImageError}
+      />
+    {/if}
+
+    {#if hovered && visible}
+      <div class="mini-viz" in:fade={{ duration: 150 }} out:fade={{ duration: 120 }}>
+        <ProjectMiniViz config={project.miniViz} />
+      </div>
+    {/if}
+  </div>
 
   <div class="content">
     <h3 class="title">{project.title}</h3>
     <p class="description">{project.description}</p>
+
+    {#if project.tags.length > 0}
+      <div class="meta-tags">
+        {#each project.tags as tag}
+          <button type="button" class="meta-tag">{tag}</button>
+        {/each}
+      </div>
+    {/if}
 
     {#if project.stack.length > 0}
       <div class="stack">
@@ -59,7 +121,7 @@
     border-radius: 10px;
     overflow: hidden;
     border: 1px solid transparent;
-    transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
     outline: none;
     display: flex;
     flex-direction: column;
@@ -69,7 +131,10 @@
   .card:focus-visible {
     border-color: var(--color-accent);
     box-shadow: 0 4px 20px rgba(0, 212, 255, 0.12);
-    transform: translateY(-2px);
+  }
+
+  .media {
+    position: relative;
   }
 
   .thumbnail {
@@ -89,6 +154,15 @@
     font-size: 2rem;
     font-weight: 700;
     color: var(--color-text-primary);
+  }
+
+  .mini-viz {
+    position: absolute;
+    inset: 0;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    overflow: hidden;
+    backdrop-filter: blur(1px);
   }
 
   .content {
@@ -113,6 +187,7 @@
     margin: 0;
     line-height: 1.45;
     display: -webkit-box;
+    line-clamp: 2;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
@@ -123,6 +198,23 @@
     flex-wrap: wrap;
     gap: 3px;
     margin-top: 2px;
+  }
+
+  .meta-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .meta-tag {
+    font-size: 0.62rem;
+    padding: 1px 6px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.86);
+    text-transform: lowercase;
+    pointer-events: none;
   }
 
   .tag {

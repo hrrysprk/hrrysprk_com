@@ -105,7 +105,7 @@
           width="204"
           height="24"
           rx="4"
-          fill="rgba(0, 0, 0, 0.55)"
+          fill="var(--color-bg)"
           transform="rotate(-90, {markerX}, {labelY})"
         />
       {/if}

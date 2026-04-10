@@ -4,7 +4,7 @@ export const publications: Publication[] = [
   {
     title: 'Convergent evolution of a genomic rearrangement may explain cancer resistance in hystrico- and sciuromorpha rodents',
     authors: 'Yachna Jain*, Keerthivasan Raanin Chandradoss*, Anjoom A. V.*, Jui Bhattacharya, Mohan Lal, Meenakshi Bagadia, <span class="me">Harpreet Singh</span>, Kuljeet Singh Sandhu',
-    journal: 'npj Aging Mechanisms and Disease',
+    journal: 'Nature npj Aging Mechanisms and Disease',
     year: 2021,
     url: 'https://www.nature.com/articles/s41514-021-00072-9'
   },

@@ -64,7 +64,7 @@
 
 <style>
   section {
-    height: 100%;
+    height: auto;
   }
 
   h2 {
@@ -89,11 +89,12 @@
   .map-col {
     border-radius: 8px;
     overflow: hidden;
-    aspect-ratio: 1.08 / 1;
+    aspect-ratio: 1.25 / 1;
     width: 104%;
     justify-self: end;
     align-self: start;
     margin-top: -3rem;
+    transform: translateX(-2rem);
   }
 
   .card-row {
@@ -152,6 +153,7 @@
       width: 100%;
       margin-top: 0;
       aspect-ratio: 1 / 1;
+      transform: none;
     }
   }
 </style>

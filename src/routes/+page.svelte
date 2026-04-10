@@ -51,6 +51,7 @@
 <style>
   .contact-lift {
     margin-top: -8rem;
+    align-self: start;
   }
 
   @media (max-width: 1024px) {

@@ -30,7 +30,16 @@
       const cx = pad + (w - pad * 2) * pos.xFrac;
       const cy = pad + (h - pad * 2) * pos.yFrac;
       cat.skills.forEach((skill) => {
-        const r = ratingToRadius[skill.rating] || 18;
+        const baseR = ratingToRadius[skill.rating] || 18;
+        const genomicBase = ratingToRadius[3] || 30;
+        const genomicSizeAdjustments: Record<string, number> = {
+          GEO: 1.2,
+          Ensembl: 1.2,
+          ENA: 0.8,
+          'WashU Epigenome Browser': 0.8
+        };
+        const genomicAdjusted = genomicBase * (genomicSizeAdjustments[skill.name] || 1);
+        const r = cat.name === 'Genomic Resources' ? genomicAdjusted : baseR;
         result.push({
           id: `${cat.name}-${skill.name}`, skill: skill.name,
           rating: skill.rating, category: cat.name, color: cat.color,
@@ -211,6 +220,17 @@
 </div>
 
 <style>
-  .bubbles-wrapper { width: 100%; overflow: visible; padding: 0; }
+  .bubbles-wrapper {
+    width: 100%;
+    overflow: visible;
+    padding: 0;
+    transform: translateX(-2rem);
+  }
   svg { width: 100%; height: auto; display: block; overflow: visible; }
+
+  @media (max-width: 768px) {
+    .bubbles-wrapper {
+      transform: none;
+    }
+  }
 </style>

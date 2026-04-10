@@ -2,15 +2,15 @@
   <h2>Credits</h2>
 
   <p class="credits-copy">
-    This site was designed and built with the help of modern AI-assisted development tools.
-    Planning, content refinement, and architectural decisions were worked through with
-    <strong>Claude Opus 4.6</strong>. The project structure, codebase organization, and initial implementation were
-    developed in <strong>Kiro IDE</strong>. Rapid iteration and visual refinement were done in <strong>Cursor IDE</strong>.
+    This site was designed and built from scratch without any templates. Planning, content refinement, and
+    architectural decisions were worked through with <strong>Claude Opus 4.6</strong>. The project structure,
+    codebase organization, and initial implementation were developed in <strong>Kiro IDE</strong>. Rapid iteration
+    and visual refinement were done in <strong>Cursor IDE</strong>.
   </p>
 
   <h3>Built With</h3>
   <p class="stack">
-    SvelteKit · D3.js · LayerCake · Three.js · Canvas API · <strong>Claude Opus 4.6</strong> · <strong>Kiro IDE</strong> · <strong>Cursor IDE</strong>
+    SvelteKit · D3.js · LayerCake · Three.js · Canvas API · Claude Opus 4.6 · Kiro IDE · Cursor IDE
   </p>
 </section>
 

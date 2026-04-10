@@ -19,7 +19,7 @@ export const lexisEntries: LexisEntry[] = [
   { label: 'MS — Biology, IISER', startDate: '2015-08-01', endDate: '2017-05-01', startAge: 21, endAge: 23, type: 'education' },
   { label: 'Thesis Projects', startDate: '2016-05-01', endDate: '2017-05-01', startAge: 22, endAge: 23, type: 'research' },
   { label: 'Research Associate, IISER', startDate: '2017-05-01', endDate: '2020-08-01', startAge: 23, endAge: 26, type: 'work' },
-  { label: 'Independent Research & Upskilling', startDate: '2020-10-01', endDate: '2022-02-01', startAge: 26, endAge: 28, type: 'education' },
+  { label: 'Independent Research & Upskilling', startDate: '2020-10-01', endDate: '2022-02-01', startAge: 26, endAge: 28, type: 'research' },
   { label: 'Google Data Analytics', startDate: '2022-04-01', endDate: '2023-01-01', startAge: 28, endAge: 29, type: 'education' },
   { label: 'Gene Expression & Open Chromatin', startDate: '2022-04-01', endDate: '2022-09-01', startAge: 28, endAge: 28.4, type: 'research' },
   { label: 'Nextflow Workshop', startDate: '2023-06-01', endDate: '2023-06-15', startAge: 29, endAge: 29, type: 'education' },

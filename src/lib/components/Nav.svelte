@@ -150,9 +150,9 @@
   }
 
   .nav-link {
-    color: var(--color-text-secondary);
+    color: #aeaeae;
     text-decoration: none;
-    font-size: 0.9rem;
+    font-size: 0.98rem;
     padding: 0.05rem var(--space-xs);
     border-radius: 4px;
     transition: color 0.2s ease;

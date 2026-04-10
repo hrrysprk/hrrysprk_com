@@ -67,7 +67,7 @@
     align-items: flex-start;
     padding: 0 0 var(--space-xl) 0;
     background-color: transparent;
-    overflow: clip;
+    overflow: visible;
   }
 
   .hero-shell {
@@ -77,8 +77,8 @@
     justify-content: space-between;
     align-items: flex-start;
     min-height: calc(100vh - 4rem);
-    transform-origin: center top;
-    will-change: transform, opacity;
+    position: relative;
+    top: -3rem;
   }
 
   /* ── Top-left role rows ── */
@@ -91,7 +91,7 @@
     align-self: flex-start;
     width: min(64%, 700px);
     padding-left: clamp(0.05rem, 0.35vw, 0.3rem);
-    transform: translateY(-0.25rem);
+    transform: translateY(-0.8rem);
   }
 
   .role-row {
@@ -166,7 +166,7 @@
     align-self: flex-end;
     width: 100%;
     padding: 0 clamp(0.7rem, 1.6vw, 1.6rem) clamp(2.8rem, 7.8vh, 5.6rem) clamp(0.4rem, 1vw, 1rem);
-    transform: translateY(1.8rem);
+    transform: translateY(0.8rem);
   }
 
   .name-line {
@@ -199,7 +199,7 @@
     letter-spacing: -0.045em;
     margin-top: 0;
     position: relative;
-    top: 2rem;
+    top: 1rem;
     align-self: flex-end;
     width: 100%;
     text-align: right;

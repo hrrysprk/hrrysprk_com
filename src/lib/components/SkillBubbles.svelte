@@ -35,7 +35,7 @@
         const genomicSizeAdjustments: Record<string, number> = {
           GEO: 1.2,
           Ensembl: 1.2,
-          ENA: 0.8,
+          ENA: 0.65,
           'WashU Epigenome Browser': 0.8
         };
         const genomicAdjusted = genomicBase * (genomicSizeAdjustments[skill.name] || 1);

@@ -29,11 +29,9 @@
   }
 
   header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 30;
+    position: static;
+    z-index: 60;
+    position: relative;
   }
 
   footer {

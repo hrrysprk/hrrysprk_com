@@ -130,7 +130,7 @@ export const projects: Project[] = [
     highlightShort: 'Contributed to peer-reviewed publication in Genetics (2019)',
     stack: ['Python', 'R', 'Bioconductor'],
     tags: ['genomics', 'research', 'bioinformatics'],
-    thumbnail: '/images/cne_gene_expression.png',
+    thumbnail: '/images/CNE.png',
     miniViz: { type: 'line', values: [11, 16, 22, 30, 37, 45], accent: '#6ece58' },
     primary: false
   }

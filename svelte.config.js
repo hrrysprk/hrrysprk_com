@@ -16,6 +16,7 @@ const config = {
 			base: ''
 		},
 		prerender: {
+			entries: ['*', '/resume.pdf'],
 			handleHttpError: ({ path }) => {
 				// Allow missing assets (images, resume) during prerender
 				if (path.startsWith('/images/') || path === '/resume.pdf') {

@@ -26,7 +26,7 @@
     'web-dashboard-3d-genome': '3D_genome_organization.png',
     'sleep-disorder-analysis': 'sleep_disorder.png',
     'behavioral-patterns': 'personality_vs_academics_networks.png',
-    'cne-gene-expression': 'cne_gene_expression.png'
+    'cne-gene-expression': 'CNE*'
   };
 
   const filteredProjects = $derived.by(() => {

@@ -8,6 +8,8 @@ export interface Project {
   id: string;
   title: string;
   description: string;
+  highlights?: string[];
+  highlightShort?: string;
   stack: string[];
   tags: string[];
   thumbnail: string;       // path relative to /static/images/

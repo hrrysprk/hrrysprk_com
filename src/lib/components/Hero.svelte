@@ -162,6 +162,7 @@
   .name-block {
     display: flex;
     flex-direction: column;
+    align-items: flex-end;
     margin-top: auto;
     align-self: flex-end;
     width: 100%;
@@ -171,6 +172,9 @@
 
   .name-line {
     margin: 0;
+    display: block;
+    width: max-content;
+    margin-left: auto;
     font-family: 'Inter', var(--font-body), sans-serif;
     font-weight: 900;
     color: #aeaeae;
@@ -190,20 +194,18 @@
     text-align: right;
     transform-origin: right top;
     align-self: flex-end;
-    width: 100%;
   }
 
   .given {
-    font-size: clamp(5.6rem, 22vw, 20.6rem);
+    font-size: clamp(5rem, 18.5vw, 16.8rem);
     line-height: 0.78;
     letter-spacing: -0.045em;
     margin-top: 0;
     position: relative;
     top: 1rem;
     align-self: flex-end;
-    width: 100%;
     text-align: right;
-    transform: translateX(-0.4ch) scaleX(0.62) scaleY(1.26);
+    transform: scaleX(0.62) scaleY(1.26);
   }
 
   .floating-links {

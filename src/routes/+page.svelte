@@ -50,7 +50,7 @@
 
 <style>
   .contact-lift {
-    margin-top: -8rem;
+    margin-top: calc(-8rem + 4.6rem);
     align-self: start;
   }
 

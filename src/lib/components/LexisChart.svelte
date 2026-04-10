@@ -186,6 +186,7 @@
     {/each}
   </svg>
   <p class="disclaimer">Displaying relevant education, research, and professional experience.</p>
+  <div class="disclaimer-gap" aria-hidden="true"></div>
 </div>
 
 <style>
@@ -237,5 +238,14 @@
     font-weight: 500;
     opacity: 0.95;
     margin-top: -0.35rem;
+    margin-bottom: 0;
+  }
+
+  .disclaimer-gap {
+    display: block;
+    height: 5em;
+    font-size: 0.92rem;
+    line-height: 1;
+    background: transparent;
   }
 </style>

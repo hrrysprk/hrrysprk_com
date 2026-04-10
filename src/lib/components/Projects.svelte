@@ -5,15 +5,46 @@
   import ProjectCard from './ProjectCard.svelte';
 
   const allTags = ['all', ...Array.from(new Set(projects.flatMap((p) => p.tags))).sort()];
+  const featuredProjectIds = ['genbrowser', 'chromapipe', 'spacegen', 'policylens', 'cne-gene-expression'];
+  const secondaryProjectIds = [
+    'neural-network-gene-length',
+    'gene-expression-prediction',
+    'web-dashboard-3d-genome',
+    'sleep-disorder-analysis',
+    'behavioral-patterns'
+  ];
   let imageFiles = $state<string[]>([]);
+  let imageBasePath = $state('/images');
+  let imageVersion = $state('1');
+  const thumbnailPatternByProjectId: Record<string, string> = {
+    genbrowser: 'genBrowser.png',
+    chromapipe: 'chromApipe.png',
+    spacegen: 'spaceGen.png',
+    policylens: 'policyLens.png',
+    'neural-network-gene-length': 'pytorch_gene_length.png',
+    'gene-expression-prediction': 'bio_vs_phy.png',
+    'web-dashboard-3d-genome': '3D_genome_organization.png',
+    'sleep-disorder-analysis': 'sleep_disorder.png',
+    'behavioral-patterns': 'personality_vs_academics_networks.png',
+    'cne-gene-expression': 'cne_gene_expression.png'
+  };
 
   const filteredProjects = $derived.by(() => {
     if ($selectedProjectTag === 'all') return projects;
     return projects.filter((p) => p.tags.includes($selectedProjectTag));
   });
 
-  const primaryProjects = $derived(filteredProjects.filter(p => p.primary));
-  const otherProjects = $derived(filteredProjects.filter(p => !p.primary));
+  const featuredProjects = $derived(
+    featuredProjectIds
+      .map((id) => filteredProjects.find((p) => p.id === id))
+      .filter((p): p is (typeof projects)[number] => Boolean(p))
+  );
+
+  const secondaryProjects = $derived(
+    secondaryProjectIds
+      .map((id) => filteredProjects.find((p) => p.id === id))
+      .filter((p): p is (typeof projects)[number] => Boolean(p))
+  );
 
   function setTag(tag: string) {
     selectedProjectTag.set(tag);
@@ -34,8 +65,32 @@
       .filter((t) => t.length >= 3);
   }
 
+  function escapeRegex(value: string): string {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  function wildcardToRegex(pattern: string): RegExp {
+    const escaped = pattern
+      .split('*')
+      .map((part) => escapeRegex(part))
+      .join('.*');
+    return new RegExp(`^${escaped}(\\.[a-z0-9]+)?$`, 'i');
+  }
+
+  function resolveMappedThumbnail(projectId: string): string | null {
+    const pattern = thumbnailPatternByProjectId[projectId];
+    if (!pattern || !imageFiles.length) return null;
+    const regex = wildcardToRegex(pattern);
+    const match = imageFiles.find((file) => regex.test(file));
+    return match ? `${imageBasePath}/${match}?v=${imageVersion}` : null;
+  }
+
   function resolveThumbnail(projectId: string, title: string, fallback: string): string {
-    if (!imageFiles.length) return fallback;
+    if (!imageFiles.length) {
+      return fallback;
+    }
+    const mapped = resolveMappedThumbnail(projectId);
+    if (mapped) return mapped;
     const tokens = normalizedTokens(projectId, title);
     let bestMatch = '';
     let bestScore = -1;
@@ -47,7 +102,8 @@
         bestMatch = file;
       }
     }
-    return bestScore > 0 ? `/images/${bestMatch}` : fallback;
+    if (bestScore > 0) return `${imageBasePath}/${bestMatch}?v=${imageVersion}`;
+    return fallback;
   }
 
   onMount(() => {
@@ -55,9 +111,13 @@
       .then((res) => res.json())
       .then((data) => {
         imageFiles = Array.isArray(data?.files) ? data.files : [];
+        imageBasePath = typeof data?.basePath === 'string' ? data.basePath : '/images';
+        imageVersion = typeof data?.version === 'string' ? data.version : Date.now().toString();
       })
       .catch(() => {
         imageFiles = [];
+        imageBasePath = '/images';
+        imageVersion = Date.now().toString();
       });
 
     const url = new URL(window.location.href);
@@ -84,15 +144,28 @@
     {/each}
   </div>
 
-  <div class="grid">
-    {#each primaryProjects as project (project.id)}
-      <div class="primary">
-        <ProjectCard {project} thumbnailSrc={resolveThumbnail(project.id, project.title, project.thumbnail)} />
+  <div class="tier-title">Featured</div>
+  <div class="grid featured-grid">
+    {#each featuredProjects as project (project.id)}
+      <div class="card-shell featured-shell">
+        <ProjectCard
+          {project}
+          thumbnailSrc={resolveThumbnail(project.id, project.title, project.thumbnail)}
+          variant="featured"
+        />
       </div>
     {/each}
-    {#each otherProjects as project (project.id)}
-      <div class="standard">
-        <ProjectCard {project} thumbnailSrc={resolveThumbnail(project.id, project.title, project.thumbnail)} />
+  </div>
+
+  <div class="tier-title secondary-title">Secondary</div>
+  <div class="grid secondary-grid">
+    {#each secondaryProjects as project (project.id)}
+      <div class="card-shell secondary-shell">
+        <ProjectCard
+          {project}
+          thumbnailSrc={resolveThumbnail(project.id, project.title, project.thumbnail)}
+          variant="secondary"
+        />
       </div>
     {/each}
   </div>
@@ -110,8 +183,15 @@
 
   .grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
     gap: 0.75rem;
+  }
+
+  .featured-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .secondary-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .filters {
@@ -145,23 +225,58 @@
     border-color: var(--color-accent);
   }
 
-  .primary {
-    grid-column: 1 / -1;
+  .tier-title {
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0.25rem 0 0.45rem;
+  }
+
+  .secondary-title {
+    margin-top: 0.9rem;
+  }
+
+  .card-shell {
+    width: 100%;
+  }
+
+  .featured-shell {
+    height: clamp(280px, 26vw, 330px);
+  }
+
+  .secondary-shell {
+    height: clamp(220px, 24vw, 260px);
   }
 
   @media (min-width: 640px) {
-    .grid {
-      grid-template-columns: repeat(3, 1fr);
+    .featured-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .secondary-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 
   @media (min-width: 1024px) {
-    .grid {
-      grid-template-columns: repeat(4, 1fr);
+    .featured-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
-    .primary {
-      grid-column: span 2;
+    .secondary-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 900px) {
+    .featured-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .featured-shell {
+      height: clamp(260px, 55vw, 320px);
     }
   }
 </style>

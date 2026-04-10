@@ -1,0 +1,181 @@
+projects:
+  - id: genbrowser
+    title: GenBrowser
+    tier: featured
+    badge: null
+    image_file: genBrowser.png
+    description: "Interactive 3D chromosome visualization implementing the novel CSAA algorithm to map mutation-vulnerable genomic regions on the chromosome surface."
+    highlights:
+      - "Novel CSAA algorithm derived from protein solvent-accessible surface area (SASA)"
+      - "Renders 225 Mb of chromosome 1 in real-time using Three.js and WebGL"
+      - "Deployed as a zero-dependency static app on GitHub Pages"
+    highlight_short: null
+    stack:
+      - TypeScript
+      - Three.js
+      - Vite
+      - D3.js
+      - lil-gui
+    live_url: "https://hrrysprk.github.io/genBrowser/"
+    repo_url: null
+
+  - id: chromapipe
+    title: ChromApipe
+    tier: featured
+    badge: null
+    image_file: chromApipe.png
+    description: "Cloud-native Nextflow DSL2 pipeline for chromatin accessibility analysis, deployed on AWS Batch with Wave containers and Fusion file system."
+    highlights:
+      - "Wave containers and Fusion file system eliminate S3 staging overhead entirely"
+      - "Full CI/CD with Docker, AWS ECR, and CloudWatch monitoring"
+      - "v1.0 GitHub release with complete documentation"
+    highlight_short: null
+    stack:
+      - Nextflow DSL2
+      - Python
+      - AWS Batch
+      - ECR
+      - S3
+      - Wave
+      - Fusion
+      - Docker
+      - CloudWatch
+    live_url: null
+    repo_url: "https://github.com/hrrysprk/chromApipe"
+
+  - id: spacegen
+    title: spaceGen
+    tier: featured
+    badge: null
+    image_file: spaceGen.png
+    description: "End-to-end single-cell multiome ML pipeline analyzing NASA OSDR spaceflight data to characterize how microgravity rewires gene expression in brain tissue."
+    highlights:
+      - "Hexagonal architecture with bronze/silver/gold medallion data layers"
+      - "XGBoost and scikit-learn classifiers with full MLflow experiment tracking"
+      - "MuData gold layer enables future snATAC-seq integration without refactoring"
+    highlight_short: null
+    stack:
+      - Python
+      - Scanpy
+      - AnnData
+      - MuData
+      - scikit-learn
+      - XGBoost
+      - MLflow
+      - PyArrow
+    live_url: null
+    repo_url: "https://github.com/hrrysprk/spaceGen"
+
+  - id: policylens
+    title: PolicyLens
+    tier: featured
+    badge: null
+    image_file: policyLens.png
+    description: "LLM-powered course policy QA system that routes queries through intent classification and retrieves answers exclusively from a structured facts database."
+    highlights:
+      - "LLM used only for intent classification, never for factual generation"
+      - "Streaming responses with real-time word-by-word delivery via FastAPI"
+      - "Supports multiple courses via structured JSON facts databases"
+    highlight_short: null
+    stack:
+      - FastAPI
+      - React
+      - TypeScript
+      - Ollama
+    live_url: null
+    repo_url: "https://github.com/tanav2202/PolicyLens"
+
+  - id: neural-network-gene-length
+    title: Neural Network for Gene Length Prediction
+    tier: secondary
+    badge: null
+    image_file: pytorch_gene_length.png
+    description: "PyTorch neural network predicting gene length from biological and physical genomic features with hyperparameter tuning and cross-validation."
+    highlights: null
+    highlight_short: "40% improvement in model convergence via architecture optimization"
+    stack:
+      - PyTorch
+      - scikit-learn
+    live_url: null
+    repo_url: "https://github.com/hrrysprk/pytorch_gene_length_pred"
+
+  - id: gene-expression-prediction
+    title: Biological vs Physical Genome
+    tier: secondary
+    badge: null
+    image_file: bio_vs_phy.png
+    description: "ML study predicting gene expression from 3D genome structural features, revealing how physical chromosome organization shapes biological function."
+    highlights: null
+    highlight_short: "Combined biological and physical features outperform either modality alone"
+    stack:
+      - PostgreSQL
+      - Python
+      - scikit-learn
+      - Pandas
+    live_url: null
+    repo_url: "https://github.com/hrrysprk/biological_vs_physical_genome"
+
+  - id: web-dashboard-3d-genome
+    title: Web Dashboard for 3D Genome Organization
+    tier: secondary
+    badge: null
+    image_file: 3D_genome_organization.png
+    description: "Interactive visualization platform for Hi-C contact matrices integrating histone modifications and transcription factor binding sites, funded by a Government of India research grant."
+    highlights: null
+    highlight_short: "Awarded competitive Government of India research grant"
+    stack:
+      - JavaScript
+      - R
+      - HTML/CSS
+      - Plotly
+      - ggplot2
+    live_url: null
+    repo_url: null
+
+  - id: sleep-disorder-analysis
+    title: Sleep Disorder Analysis
+    tier: secondary
+    badge: null
+    image_file: sleep_disorder.png
+    description: "Reproducible end-to-end ML pipeline predicting stress levels from sleep and lifestyle features, with automated data validation, Docker containerization, and Quarto reporting."
+    highlights: null
+    highlight_short: "Full pipeline reproducibility via Docker, Makefile orchestration, and Pandera validation"
+    stack:
+      - Python
+      - scikit-learn
+      - Altair
+      - Pandera
+      - Docker
+    live_url: null
+    repo_url: "https://github.com/hrrysprk/sleep-disorder-analysis"
+
+  - id: behavioral-patterns
+    title: Behavioral Patterns in Student Populations
+    tier: secondary
+    badge: "Master's Thesis"
+    image_file: personality_vs_academics_networks.png
+    description: "Network analysis of social dynamics across 1500+ students and faculty, applying graph theory and supervised ML to predict academic performance from personality and demographic features."
+    highlights: null
+    highlight_short: "1500+ participants across student and faculty populations at IISER Mohali"
+    stack:
+      - Python
+      - R
+      - Django
+      - Network Analysis
+    live_url: null
+    repo_url: null
+
+  - id: cne-gene-expression
+    title: Role of Conserved Non-Coding Elements in Gene Expression
+    tier: secondary
+    badge: "Master's Thesis"
+    image_file: cne_gene_expression.png
+    description: "Investigated how genomic proximity to conserved non-coding elements regulates gene expression during mammalian brain development, contributing directly to a publication in Genetics."
+    highlights: null
+    highlight_short: "Contributed to peer-reviewed publication in Genetics (2019)"
+    stack:
+      - Python
+      - R
+      - Bioconductor
+    live_url: null
+    repo_url: null

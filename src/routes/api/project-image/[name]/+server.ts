@@ -12,9 +12,9 @@ const MIME_BY_EXT: Record<string, string> = {
 };
 
 const CANDIDATE_DIRS = [
-  path.join(process.cwd(), 'static', 'imagea'),
   path.join(process.cwd(), 'static', 'images'),
-  path.join(process.cwd(), 'build', 'images')
+  path.join(process.cwd(), 'build', 'images'),
+  path.join(process.cwd(), 'static', 'imagea')
 ];
 
 export const GET: RequestHandler = async ({ params }) => {

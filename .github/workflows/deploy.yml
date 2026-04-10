@@ -26,10 +26,6 @@ jobs:
       - run: npm ci
       - name: Copy resume PDF to static
         run: cp "info-docs/all_eyes_on_me_BI_v5.pdf" "static/resume.pdf"
-      - name: Copy images to static
-        run: |
-          mkdir -p static/images
-          cp build/images/*.png static/images/ 2>/dev/null || true
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3
         with:

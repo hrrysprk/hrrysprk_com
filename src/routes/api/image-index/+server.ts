@@ -7,9 +7,9 @@ const IMAGE_EXT = new Set(['.png', '.jpg', '.jpeg', '.webp', '.avif', '.gif']);
 export async function GET() {
   try {
     const candidateDirs = [
-      path.join(process.cwd(), 'static', 'imagea'),
       path.join(process.cwd(), 'static', 'images'),
-      path.join(process.cwd(), 'build', 'images')
+      path.join(process.cwd(), 'build', 'images'),
+      path.join(process.cwd(), 'static', 'imagea')
     ];
     for (const imageDir of candidateDirs) {
       try {

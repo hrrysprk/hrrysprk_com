@@ -15,12 +15,12 @@
     'behavioral-patterns'
   ];
   const thumbnailByProjectId: Record<string, string> = {
-    genbrowser: 'genBrowser.png',
-    chromapipe: 'chromApipe.png',
-    spacegen: 'spaceGen.png',
-    policylens: 'policyLens.png',
+    genbrowser: 'GenBrowser.png',
+    chromapipe: 'ChromApipe.png',
+    spacegen: 'SpaceGen.png',
+    policylens: 'PolicyLens.png',
     'neural-network-gene-length': 'pytorch_gene_length.png',
-    'gene-expression-prediction': 'bio_vs_phy.png',
+    'gene-expression-prediction': 'biological_vs_physical.png',
     'web-dashboard-3d-genome': '3D_genome_organization.png',
     'sleep-disorder-analysis': 'sleep_disorder.png',
     'behavioral-patterns': 'personality_vs_academics_networks.png',

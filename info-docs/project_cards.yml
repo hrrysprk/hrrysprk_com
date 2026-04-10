@@ -100,7 +100,7 @@ projects:
     repo_url: "https://github.com/hrrysprk/pytorch_gene_length_pred"
 
   - id: gene-expression-prediction
-    title: Biological vs Physical Genome
+    title: 3D Genome Structure as a Predictor of Gene Expression
     tier: secondary
     badge: null
     image_file: bio_vs_phy.png

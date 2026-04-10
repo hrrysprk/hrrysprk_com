@@ -12,7 +12,7 @@ export const projects: Project[] = [
     ],
     stack: ['TypeScript', 'Three.js', 'Vite', 'D3.js', 'lil-gui'],
     tags: ['visualization', 'bioinformatics', 'frontend'],
-    thumbnail: '/images/genBrowser.png',
+    thumbnail: '/images/GenBrowser.png',
     liveUrl: 'https://hrrysprk.github.io/genBrowser',
     miniViz: { type: 'line', values: [24, 36, 31, 45, 54, 63, 58], accent: '#00d4ff' },
     primary: true
@@ -28,7 +28,7 @@ export const projects: Project[] = [
     ],
     stack: ['Nextflow DSL2', 'Python', 'AWS Batch', 'ECR', 'S3', 'Wave', 'Fusion', 'Docker', 'CloudWatch'],
     tags: ['bioinformatics', 'cloud', 'pipelines', 'genomics'],
-    thumbnail: '/images/chromApipe.png',
+    thumbnail: '/images/ChromApipe.png',
     repoUrl: 'https://github.com/hrrysprk/chromApipe',
     miniViz: { type: 'bars', values: [15, 28, 34, 52, 49, 61], accent: '#35b779' },
     primary: true
@@ -44,7 +44,7 @@ export const projects: Project[] = [
     ],
     stack: ['Python', 'Scanpy', 'AnnData', 'MuData', 'scikit-learn', 'XGBoost', 'MLflow', 'PyArrow'],
     tags: ['machine-learning', 'single-cell', 'bioinformatics', 'genomics'],
-    thumbnail: '/images/spaceGen.png',
+    thumbnail: '/images/SpaceGen.png',
     repoUrl: 'https://github.com/hrrysprk/spaceGen',
     miniViz: { type: 'line', values: [18, 22, 29, 35, 47, 52, 66], accent: '#fde725' },
     primary: true
@@ -60,7 +60,7 @@ export const projects: Project[] = [
     ],
     stack: ['FastAPI', 'React', 'TypeScript', 'Ollama'],
     tags: ['llm', 'web', 'backend'],
-    thumbnail: '/images/policyLens.png',
+    thumbnail: '/images/PolicyLens.png',
     repoUrl: 'https://github.com/tanav2202/PolicyLens',
     miniViz: { type: 'bars', values: [20, 36, 40, 57, 62], accent: '#ff6b9d' },
     primary: true
@@ -79,12 +79,12 @@ export const projects: Project[] = [
   },
   {
     id: 'gene-expression-prediction',
-    title: 'Biological vs Physical Genome',
+    title: '3D Genome Structure as a Predictor of Gene Expression',
     description: 'ML study predicting gene expression from 3D genome structural features, revealing how physical chromosome organization shapes biological function.',
     highlightShort: 'Combined biological and physical features outperform either modality alone',
     stack: ['PostgreSQL', 'Python', 'scikit-learn', 'Pandas'],
     tags: ['machine-learning', 'backend', 'genomics'],
-    thumbnail: '/images/bio_vs_phy.png',
+    thumbnail: '/images/biological_vs_physical.png',
     repoUrl: 'https://github.com/hrrysprk/biological_vs_physical_genome',
     miniViz: { type: 'bars', values: [12, 20, 26, 31, 39, 42], accent: '#6ece58' },
     primary: false

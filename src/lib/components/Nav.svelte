@@ -9,6 +9,11 @@
     { id: 'timeline', label: 'Timeline' },
     { id: 'contact', label: 'Contact' }
   ];
+  const desktopPrimary = sections.slice(0, 4);
+  const desktopSecondary = [
+    { id: 'timeline', label: 'Education & Research' },
+    { id: 'contact', label: 'Contact' }
+  ];
 
   let activeSection = $state('');
   let menuOpen = $state(false);
@@ -57,23 +62,37 @@
 </script>
 
 <nav class="nav" aria-label="Main navigation">
-  <a href="#hero" class="nav-logo" onclick={scrollToTop}>HS</a>
-
   <!-- Desktop nav links -->
-  <ul class="nav-links">
-    {#each sections as section}
-      <li>
-        <a
-          href="#{section.id}"
-          class="nav-link"
-          class:active={activeSection === section.id}
-          onclick={(e) => scrollToSection(e, section.id)}
-        >
-          {section.label}
-        </a>
-      </li>
-    {/each}
-  </ul>
+  <div class="desktop-nav">
+    <ul class="nav-links">
+      {#each desktopPrimary as section}
+        <li>
+          <a
+            href="#{section.id}"
+            class="nav-link"
+            class:active={activeSection === section.id}
+            onclick={(e) => scrollToSection(e, section.id)}
+          >
+            {section.label}
+          </a>
+        </li>
+      {/each}
+    </ul>
+    <ul class="nav-links nav-links-secondary">
+      {#each desktopSecondary as section}
+        <li>
+          <a
+            href="#{section.id}"
+            class="nav-link"
+            class:active={activeSection === section.id}
+            onclick={(e) => scrollToSection(e, section.id)}
+          >
+            {section.label}
+          </a>
+        </li>
+      {/each}
+    </ul>
+  </div>
 
   <!-- Mobile hamburger menu -->
   <details class="mobile-menu" bind:open={menuOpen}>
@@ -105,46 +124,44 @@
   .nav {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     padding: var(--space-sm) var(--space-lg);
     background: transparent;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
 
-  .nav-logo {
-    font-family: var(--font-mono);
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--color-accent);
-    text-decoration: none;
-    min-width: 44px;
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .nav-logo:hover {
-    color: var(--color-accent-hover);
-  }
-
   .nav-links {
     display: flex;
     list-style: none;
-    gap: var(--space-md);
+    gap: 0.8rem;
+    justify-content: flex-end;
+  }
+
+  .desktop-nav {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.1rem;
+  }
+
+  .nav-links-secondary {
+    gap: 0.9rem;
   }
 
   .nav-link {
     color: var(--color-text-secondary);
     text-decoration: none;
     font-size: 0.9rem;
-    padding: var(--space-xs) var(--space-sm);
+    padding: 0.05rem var(--space-xs);
     border-radius: 4px;
     transition: color 0.2s ease;
-    min-height: 44px;
+    min-height: 20px;
     display: inline-flex;
     align-items: center;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    font-weight: 700;
   }
 
   .nav-link:hover {
@@ -238,7 +255,7 @@
   }
 
   @media (max-width: 767px) {
-    .nav-links {
+    .desktop-nav {
       display: none;
     }
 

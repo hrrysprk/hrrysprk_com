@@ -3,17 +3,13 @@
   <div class="about-body">
     <div class="col">
       <p>
-        I'm a computational biologist and data scientist with a BS-MS in Biology from IISER
-        and currently completing the Master of Data Science at UBC. My research spans chromatin
-        structure, genome evolution, and single-cell transcriptomics, resulting in three
-        peer-reviewed publications.
+        I'm a computational biologist and ML engineer with a deep curiosity for the hidden architecture of life. My journey started at IISER Mohali, where I spent years studying how chromosomes fold in 3D space and how that folding shapes which genes get turned on or off. That work led to three peer-reviewed publications in Nature NPJ Aging, BMC Genomics, and Genetics, and a Government of India research grant.
       </p>
-    </div>
-    <div class="col">
       <p>
-        I build tools at the intersection of computational biology,
-        machine learning, and interactive visualization — from 3D chromosome browsers to
-        cloud-native bioinformatics pipelines.
+        Over time I fell in love with the engineering side of science. Building the tools, not just using them. That led me to cloud-native pipelines, single-cell ML systems, and interactive visualizations that make complex biology readable to anyone. I am currently completing my Master of Data Science at UBC, where I also TA a visualization course taught by one of the leading researchers in the field.
+      </p>
+      <p>
+        I am actively looking for bioinformatics, computational biology, and ML scientist roles in Vancouver where I can keep doing what I love: asking hard biological questions and building production-grade systems to answer them. If that sounds like your team, I would love to talk.
       </p>
     </div>
   </div>

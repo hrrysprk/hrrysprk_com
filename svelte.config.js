@@ -12,8 +12,9 @@ const config = {
 			precompress: false,
 			strict: true
 		}),
+		// Custom domain (hrrysprk.com) serves the site at URL root — no base path.
 		paths: {
-			base: process.env.NODE_ENV === 'production' ? '/hrrysprk_com' : ''
+			base: ''
 		},
 		prerender: {
 			entries: ['*', '/resume.pdf'],

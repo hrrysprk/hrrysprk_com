@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { base } from '$app/paths';
   import { projects } from '$lib/data/projects';
   import { selectedProjectTag } from '$lib/stores/projectFilters';
   import ProjectCard from './ProjectCard.svelte';
@@ -107,7 +108,7 @@
   }
 
   onMount(() => {
-    fetch('/api/image-index')
+    fetch(`${base}/api/image-index`)
       .then((res) => res.json())
       .then((data) => {
         imageFiles = Array.isArray(data?.files) ? data.files : [];

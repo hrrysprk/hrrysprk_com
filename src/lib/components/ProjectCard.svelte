@@ -19,10 +19,13 @@
     imgFailed = false;
   });
 
+  import { base } from '$app/paths';
+
   function handleImageError() {
-    if (!attemptedStaticFallback && currentThumbnailSrc.startsWith('/api/project-image/')) {
+    if (!attemptedStaticFallback && currentThumbnailSrc.includes('/api/project-image/')) {
       attemptedStaticFallback = true;
-      currentThumbnailSrc = currentThumbnailSrc.replace('/api/project-image/', '/images/');
+      const filename = currentThumbnailSrc.split('/api/project-image/')[1];
+      currentThumbnailSrc = `${base}/images/${filename}`;
       return;
     }
     imgFailed = true;

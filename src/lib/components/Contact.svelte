@@ -151,8 +151,10 @@
 
     .map-col {
       width: 100%;
+      max-width: 82%;
       margin-top: 0;
-      aspect-ratio: 1 / 1;
+      margin-inline: auto;
+      aspect-ratio: 4 / 3;
       transform: none;
     }
   }

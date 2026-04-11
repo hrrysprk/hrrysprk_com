@@ -28,24 +28,66 @@
   }
 
   onMount(() => {
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: true, desynchronized: true });
     if (!ctx) return;
 
     let stars: Star[] = [];
     let helices: DnaHelix[] = [];
     let animationId: number;
-    let scrollY = 0;
     let time = 0;
+    let resizeTimer: ReturnType<typeof setTimeout> | null = null;
+    let lastResizeW = 0;
+    let lastResizeH = 0;
 
-    function resize() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function isNarrowViewport(): boolean {
+      return window.innerWidth <= 768;
+    }
+
+    function applyCanvasSize(w: number, h: number) {
+      canvas.width = w;
+      canvas.height = h;
+      lastResizeW = w;
+      lastResizeH = h;
+    }
+
+    /** Full reinit — debounced on mobile to avoid star “pops” when the URL bar resizes the viewport */
+    function resizeCommitted() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      applyCanvasSize(w, h);
       initStars();
       initHelices();
     }
 
+    function scheduleResize() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      /* Same width + small height-only change: typical iOS address-bar jiggle — don’t reshuffle stars */
+      if (
+        isNarrowViewport() &&
+        w === lastResizeW &&
+        lastResizeH > 0 &&
+        Math.abs(h - lastResizeH) < 72
+      ) {
+        applyCanvasSize(w, h);
+        return;
+      }
+      if (resizeTimer) clearTimeout(resizeTimer);
+      const delay = isNarrowViewport() ? 220 : 80;
+      resizeTimer = setTimeout(() => {
+        resizeTimer = null;
+        resizeCommitted();
+      }, delay);
+    }
+
     function initStars() {
-      const count = Math.floor((canvas.width * canvas.height) / 6000);
+      const area = canvas.width * canvas.height;
+      const narrow = canvas.width <= 768;
+      const divisor = narrow ? 9500 : 6000;
+      const cap = narrow ? 64 : 220;
+      const count = Math.min(cap, Math.floor(area / divisor));
       stars = Array.from({ length: count }, () => ({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
@@ -58,7 +100,12 @@
     }
 
     function initHelices() {
-      const count = Math.max(6, Math.floor((canvas.width * canvas.height) / 120000));
+      const area = canvas.width * canvas.height;
+      const narrow = canvas.width <= 768;
+      const divisor = narrow ? 220000 : 120000;
+      const minH = narrow ? 2 : 6;
+      const maxH = narrow ? 4 : 14;
+      const count = Math.min(maxH, Math.max(minH, Math.floor(area / divisor)));
       helices = Array.from({ length: count }, () => ({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
@@ -134,8 +181,9 @@
 
     function draw() {
       if (!ctx) return;
+      const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      time += 1;
+      time += reduceMotion ? 0 : 1;
 
       for (const star of stars) {
         const twinkle = Math.sin(time * star.twinkleSpeed + star.twinkleOffset);
@@ -167,22 +215,23 @@
         helix.y = savedY;
       }
 
+      if (!reduceMotion) {
+        animationId = requestAnimationFrame(draw);
+      }
+    }
+
+    window.addEventListener('resize', scheduleResize);
+    resizeCommitted();
+    if (reduceMotion) {
+      draw();
+    } else {
       animationId = requestAnimationFrame(draw);
     }
 
-    function handleScroll() {
-      scrollY = window.scrollY;
-    }
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', resize);
-    resize();
-    draw();
-
     return () => {
       cancelAnimationFrame(animationId);
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', resize);
+      if (resizeTimer) clearTimeout(resizeTimer);
+      window.removeEventListener('resize', scheduleResize);
     };
   });
 </script>
@@ -192,11 +241,15 @@
 <style>
   .starfield {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
+    inset: 0;
+    width: 100%;
+    /* dynamic viewport reduces jumps when mobile browser chrome shows/hides */
     height: 100vh;
+    height: 100dvh;
+    max-height: -webkit-fill-available;
     z-index: 0;
     pointer-events: none;
+    contain: strict;
+    transform: translateZ(0);
   }
 </style>

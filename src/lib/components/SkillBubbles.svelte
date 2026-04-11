@@ -46,8 +46,9 @@
     return {
       left: 4,
       right: 36,
-      top: pad + 10,
-      bottom: pad + 34
+      top: pad - 4,
+      /* Extra room at SVG bottom so lowest bubbles sit above the legend overlay */
+      bottom: pad + 50
     };
   }
 
@@ -58,7 +59,7 @@
   function radiusScale(w: number): number {
     if (w >= narrowBreakpoint) return 1;
     /* Larger bubbles on phones; still capped so labels fit */
-    return Math.min(1.04, Math.max(0.9, 0.78 + w / 780));
+    return Math.min(1.15, Math.max(0.98, 0.86 + w / 700));
   }
 
   function buildNodes(w: number, h: number) {
@@ -139,7 +140,7 @@
     if (!simulation) return;
     const narrow = w < narrowBreakpoint;
     simulation.alphaDecay(narrow ? 0.0045 : 0.008);
-    const coll = forceCollide((d: any) => d.r + (narrow ? 10 : 2))
+    const coll = forceCollide((d: any) => d.r + (narrow ? 11 : 2))
       .strength(narrow ? 1 : 0.8)
       .iterations(narrow ? 5 : 1);
     simulation
@@ -295,18 +296,36 @@
 
     <!-- Skill bubbles -->
     {#each nodes as node}
+      {@const labelWords = node.skill.trim().split(/\s+/)}
+      {@const fsNarrow = node.r > 32 ? 13 : node.r > 24 ? 11.5 : 10}
+      {@const fsWide = node.r > 32 ? 13 : node.r > 22 ? 11 : 9.5}
+      {@const fsNum = narrowLayout ? fsNarrow : fsWide}
+      {@const linePx = fsNum * 1.14}
+      {@const blockTop = node.y - ((labelWords.length - 1) * linePx) / 2}
       <g style="cursor: pointer;">
         <circle cx={node.x} cy={node.y} r={node.r}
           fill={node.color} opacity="1"
           stroke={node.color} stroke-width="1.5" stroke-opacity="1" />
-        <text x={node.x} y={node.y}
-          fill="var(--color-text-primary)"
-          font-size={narrowLayout
-            ? (node.r > 30 ? '12.5' : node.r > 22 ? '11' : '9.5')
-            : (node.r > 32 ? '13' : node.r > 22 ? '11' : '9.5')}
-          text-anchor="middle" dominant-baseline="middle"
-          font-family="var(--font-mono)" style="pointer-events: none;"
-        >{node.skill}</text>
+        {#if narrowLayout && labelWords.length > 1}
+          <text
+            fill="var(--color-text-primary)"
+            font-size={fsNum}
+            text-anchor="middle"
+            font-family="var(--font-mono)"
+            style="pointer-events: none;"
+          >
+            {#each labelWords as word, wi}
+              <tspan x={node.x} y={blockTop + wi * linePx + linePx * 0.28}>{word}</tspan>
+            {/each}
+          </text>
+        {:else}
+          <text x={node.x} y={node.y}
+            fill="var(--color-text-primary)"
+            font-size={fsNum}
+            text-anchor="middle" dominant-baseline="middle"
+            font-family="var(--font-mono)" style="pointer-events: none;"
+          >{node.skill}</text>
+        {/if}
       </g>
     {/each}
   </svg>
@@ -376,12 +395,13 @@
     .bubbles-wrapper {
       width: 100%;
       box-sizing: border-box;
-      margin-top: -0.35rem;
-      padding-bottom: 3.35rem;
+      margin-top: -1.2rem;
+      padding-bottom: 3.55rem;
     }
 
+    /* Higher than chart shift (~0.5rem nudge + inset) so legend clears bubbles */
     .experience-legend {
-      bottom: 2.85rem;
+      bottom: 3.55rem;
     }
   }
 </style>

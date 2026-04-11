@@ -8,7 +8,7 @@ export interface SkillCategory {
 export const skillCategories: SkillCategory[] = [
   { name: 'Programming', color: '#0a3a4a', labelColor: '#00d4ff', skills: [
     { name: 'Python', rating: 5 }, { name: 'R', rating: 4 }, { name: 'SQL', rating: 4 },
-    { name: 'JavaScript', rating: 2 }, { name: 'Bash', rating: 3 }
+    { name: 'Perl', rating: 4 }, { name: 'JavaScript', rating: 2 }, { name: 'Bash', rating: 3 }
   ]},
   { name: 'Bioinformatics', color: '#163a2e', labelColor: '#35b779', skills: [
     { name: 'Hi-C', rating: 5 }, { name: 'FastQC', rating: 4 }, { name: 'Seurat', rating: 3 },

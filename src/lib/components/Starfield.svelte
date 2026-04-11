@@ -28,16 +28,19 @@
   }
 
   onMount(() => {
-    const ctx = canvas.getContext('2d', { alpha: true, desynchronized: true });
+    const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
     let stars: Star[] = [];
     let helices: DnaHelix[] = [];
-    let animationId: number;
+    let animationId = 0;
     let time = 0;
     let resizeTimer: ReturnType<typeof setTimeout> | null = null;
     let lastResizeW = 0;
     let lastResizeH = 0;
+
+    /** Phones / narrow viewports: one static paint, no rAF (eliminates jank with browser chrome). */
+    let mobileStatic = false;
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -52,19 +55,31 @@
       lastResizeH = h;
     }
 
-    /** Full reinit — debounced on mobile to avoid star “pops” when the URL bar resizes the viewport */
     function resizeCommitted() {
+      mobileStatic = isNarrowViewport();
       const w = window.innerWidth;
       const h = window.innerHeight;
       applyCanvasSize(w, h);
       initStars();
-      initHelices();
+      if (mobileStatic || reduceMotion) {
+        helices = [];
+      } else {
+        initHelices();
+      }
+      paint();
+
+      const shouldAnimate = !mobileStatic && !reduceMotion;
+      if (!shouldAnimate) {
+        cancelAnimationFrame(animationId);
+        animationId = 0;
+      } else if (animationId === 0) {
+        animationId = requestAnimationFrame(loop);
+      }
     }
 
     function scheduleResize() {
       const w = window.innerWidth;
       const h = window.innerHeight;
-      /* Same width + small height-only change: typical iOS address-bar jiggle — don’t reshuffle stars */
       if (
         isNarrowViewport() &&
         w === lastResizeW &&
@@ -72,10 +87,11 @@
         Math.abs(h - lastResizeH) < 72
       ) {
         applyCanvasSize(w, h);
+        paint();
         return;
       }
       if (resizeTimer) clearTimeout(resizeTimer);
-      const delay = isNarrowViewport() ? 220 : 80;
+      const delay = isNarrowViewport() ? 280 : 80;
       resizeTimer = setTimeout(() => {
         resizeTimer = null;
         resizeCommitted();
@@ -85,8 +101,8 @@
     function initStars() {
       const area = canvas.width * canvas.height;
       const narrow = canvas.width <= 768;
-      const divisor = narrow ? 9500 : 6000;
-      const cap = narrow ? 64 : 220;
+      const divisor = narrow ? 11000 : 6000;
+      const cap = narrow ? 48 : 220;
       const count = Math.min(cap, Math.floor(area / divisor));
       stars = Array.from({ length: count }, () => ({
         x: Math.random() * canvas.width,
@@ -101,11 +117,7 @@
 
     function initHelices() {
       const area = canvas.width * canvas.height;
-      const narrow = canvas.width <= 768;
-      const divisor = narrow ? 220000 : 120000;
-      const minH = narrow ? 2 : 6;
-      const maxH = narrow ? 4 : 14;
-      const count = Math.min(maxH, Math.max(minH, Math.floor(area / divisor)));
+      const count = Math.max(6, Math.floor(area / 120000));
       helices = Array.from({ length: count }, () => ({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
@@ -137,13 +149,10 @@
 
       const strandColors = ['#ff6b9d', '#7ec8e3'];
 
-      // Helper: get curved axis offset at position t (0-1)
-      // Parabolic bend: max at center, zero at ends
       function curveY(t: number): number {
         return bendAmount * (4 * t * (1 - t));
       }
 
-      // Draw white base pair rungs connecting both strands
       for (let i = 1; i < steps; i += 2) {
         const t = i / steps;
         const px = t * length - length / 2;
@@ -158,7 +167,6 @@
         ctx.stroke();
       }
 
-      // Draw two backbone strands — pink and light blue
       for (let s = 0; s < 2; s++) {
         const phaseOffset = s * Math.PI;
         ctx.beginPath();
@@ -166,7 +174,8 @@
           const t = i / steps;
           const px = t * length - length / 2;
           const cy = curveY(t);
-          const py = cy + Math.sin((t * Math.PI * 2 * twists) + phase + time * 0.015 + phaseOffset) * amplitude;
+          const py =
+            cy + Math.sin((t * Math.PI * 2 * twists) + phase + time * 0.015 + phaseOffset) * amplitude;
           if (i === 0) ctx.moveTo(px, py);
           else ctx.lineTo(px, py);
         }
@@ -179,11 +188,34 @@
       ctx.restore();
     }
 
-    function draw() {
+    function paintStaticStars() {
       if (!ctx) return;
-      const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
+      for (const star of stars) {
+        const alpha = star.opacity * 0.88;
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(232, 232, 240, ${Math.max(0.06, Math.min(0.85, alpha))})`;
+        ctx.fill();
+        if (star.size > 1.2) {
+          ctx.beginPath();
+          ctx.arc(star.x, star.y, star.size * 2.5, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(232, 232, 240, ${alpha * 0.07})`;
+          ctx.fill();
+        }
+      }
+    }
+
+    function paint() {
+      if (!ctx) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      time += reduceMotion ? 0 : 1;
+
+      if (mobileStatic || reduceMotion) {
+        paintStaticStars();
+        return;
+      }
+
+      const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
+      time += 1;
 
       for (const star of stars) {
         const twinkle = Math.sin(time * star.twinkleSpeed + star.twinkleOffset);
@@ -206,7 +238,10 @@
         helix.x += helix.driftX;
         helix.y += helix.speed;
         const helixDrift = scrollY * helix.scale * 0.1;
-        const drawY = ((helix.y - helixDrift) % (canvas.height + 200) + (canvas.height + 200)) % (canvas.height + 200) - 100;
+        const drawY =
+          ((helix.y - helixDrift) % (canvas.height + 200) + (canvas.height + 200)) %
+            (canvas.height + 200) -
+          100;
         if (helix.x < -100) helix.x = canvas.width + 100;
         if (helix.x > canvas.width + 100) helix.x = -100;
         const savedY = helix.y;
@@ -214,19 +249,17 @@
         drawHelix(helix);
         helix.y = savedY;
       }
+    }
 
-      if (!reduceMotion) {
-        animationId = requestAnimationFrame(draw);
+    function loop() {
+      paint();
+      if (!mobileStatic && !reduceMotion) {
+        animationId = requestAnimationFrame(loop);
       }
     }
 
     window.addEventListener('resize', scheduleResize);
     resizeCommitted();
-    if (reduceMotion) {
-      draw();
-    } else {
-      animationId = requestAnimationFrame(draw);
-    }
 
     return () => {
       cancelAnimationFrame(animationId);
@@ -243,13 +276,10 @@
     position: fixed;
     inset: 0;
     width: 100%;
-    /* dynamic viewport reduces jumps when mobile browser chrome shows/hides */
     height: 100vh;
     height: 100dvh;
     max-height: -webkit-fill-available;
     z-index: 0;
     pointer-events: none;
-    contain: strict;
-    transform: translateZ(0);
   }
 </style>

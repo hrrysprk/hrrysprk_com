@@ -292,19 +292,26 @@
     }
   }
 
-  @media (max-width: 640px) {
+  @media (max-width: 767px) {
     .hero {
+      min-height: 100svh;
+      min-height: 100dvh;
+      flex-direction: column;
       padding-inline: max(var(--space-sm), env(safe-area-inset-left))
-        max(calc(var(--space-sm) + 2.85rem), env(safe-area-inset-right));
+        max(var(--space-sm), env(safe-area-inset-right));
       padding-top: max(0.35rem, env(safe-area-inset-top));
+      padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+      box-sizing: border-box;
     }
 
     .hero-shell {
       top: 0;
+      flex: 1;
       min-height: calc(100svh - 2.75rem);
-      /* Keep copy out from under the fixed icon stack */
-      padding-right: 0.15rem;
+      min-height: calc(100dvh - 2.75rem);
+      padding-right: 0;
       box-sizing: border-box;
+      overflow: visible;
     }
 
     .roles {
@@ -315,30 +322,31 @@
       transform: none;
     }
 
+    /* Shared min-width so ML and ENGINEER share a right edge (second column). */
     .role-row-1 .role-side,
     .role-row-2 .role-side {
       margin-left: 0;
     }
 
-    /* Same optical size for grey + orange words; aligned on one line */
     .role-row {
       display: flex;
       flex-direction: row;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       align-items: center;
-      gap: 0.35rem 0.65rem;
+      gap: 0.35rem 0.55rem;
       width: 100%;
     }
 
     .role-row .role-main {
       line-height: 0.88;
-      flex: 0 1 auto;
+      flex: 1 1 auto;
+      min-width: 0;
     }
 
     .role-row .role-side {
       flex: 0 0 auto;
-      text-align: left;
-      width: auto;
+      min-width: clamp(9.25ch, 30vw, 11.5ch);
+      text-align: right;
       line-height: 0.88;
     }
 
@@ -355,38 +363,67 @@
     }
 
     .name-block {
-      transform: none;
-      padding: 0.35rem 0 clamp(1.5rem, 7vh, 3.25rem);
-      margin-top: 1rem;
+      width: 100%;
+      align-self: stretch;
+      align-items: stretch;
+      overflow: visible;
+      padding: 0.15rem max(0.2rem, env(safe-area-inset-right)) max(1.25rem, env(safe-area-inset-bottom), 2.5vh) 0;
+      box-sizing: border-box;
     }
 
+    /*
+     * Full-width lines + text-align right so both names share one right edge
+     * (max-content + margin-left: auto made HARPREET’s painted edge sit past SINGH after scale).
+     */
     .name-line {
+      width: 100%;
+      max-width: 100%;
+      margin-left: 0;
+      text-align: right;
       transform: scaleX(0.74) scaleY(1.12);
+      transform-origin: right top;
+      line-height: 1.05;
+      overflow: visible;
+    }
+
+    /* Nudge left so the painted right edge lines up with SINGH (scale + stroke skew). */
+    .name-line.given {
+      transform: scaleX(0.74) scaleY(1.12) translateX(clamp(-1.65rem, -6.5vw, -0.55rem));
+      transform-origin: right top;
     }
 
     .surname {
-      font-size: clamp(4.65rem, 22vw, 7rem);
+      align-self: stretch;
+      font-size: clamp(5.15rem, 25vw, 8rem);
       top: 0;
-      line-height: 0.78;
+      line-height: 1.02;
+      margin-bottom: 0.02em;
     }
 
     .given {
-      font-size: clamp(4.25rem, 20vw, 6.5rem);
-      top: 0.1rem;
-      line-height: 0.78;
+      align-self: stretch;
+      font-size: clamp(4.75rem, 23vw, 7.35rem);
+      top: 0;
+      line-height: 1.05;
+      margin-top: 0.08em;
+    }
+
+    .hero .hero-shell {
+      justify-content: flex-start;
+    }
+
+    /*
+     * Extra offset: ~2× the “HARPREET” line (clamp) so the block sits lower;
+     * uses same clamp as .given font-size for consistency.
+     */
+    section.hero#hero .hero-shell .name-block {
+      margin-top: calc(
+        clamp(2.35rem, 14vh, 7rem) + 2 * clamp(4.75rem, 23vw, 7.35rem)
+      );
+      transform: none;
     }
 
     .floating-links {
-      right: 0;
-      top: max(38vh, env(safe-area-inset-top));
-    }
-
-    .icon-link {
-      width: 36px;
-      height: 36px;
-    }
-
-    .icon-label {
       display: none;
     }
   }

@@ -7,6 +7,10 @@
   let width = $state(1000);
   let height = $state(780);
   let nodes: any[] = $state([]);
+  /** Category captions above each stacked cluster (narrow / static layout only). */
+  let mobileSectionLabels = $state<
+    { name: string; labelColor: string; x: number; y: number; fontSize: number }[]
+  >([]);
   let mouseX = $state(-9999);
   let mouseY = $state(-9999);
 
@@ -62,11 +66,178 @@
     return Math.min(1.15, Math.max(0.98, 0.86 + w / 700));
   }
 
+  const genomicSizeAdjustments: Record<string, number> = {
+    GEO: 1.2,
+    Ensembl: 1.2,
+    ENA: 0.65,
+    'WashU Epigenome Browser': 0.8
+  };
+
+  /** Visual radius tier (stored skill rating unchanged; legend still reflects data). */
+  function radiusFromTier(catName: string, skillName: string, ratingTier: number): number {
+    let r = ratingToRadius[ratingTier] || 18;
+    if (catName === 'Bioinformatics' && skillName === 'HiCUP') {
+      r = Math.max(r, ratingToRadius[4] || 38);
+    }
+    return r;
+  }
+
+  function bubbleRadius(catName: string, skill: { name: string; rating: number }, w: number): number {
+    const rScale = radiusScale(w);
+    const baseR = radiusFromTier(catName, skill.name, skill.rating);
+    const genomicBase = ratingToRadius[3] || 30;
+    const genomicAdjusted = genomicBase * (genomicSizeAdjustments[skill.name] || 1);
+    const rawR = catName === 'Genomic Resources' ? genomicAdjusted : baseR;
+    return rawR * rScale;
+  }
+
+  /**
+   * Narrow static layout only: Programming bubble radii vs data ratings (legend still uses stored ratings).
+   * R → Python-sized; JavaScript → slightly below SQL/Perl tier; Perl uses data (same rating as SQL).
+   */
+  function mobileRadiusRating(catName: string, skillName: string, actualRating: number): number {
+    if (catName !== 'Programming') return actualRating;
+    if (skillName === 'R') return 5;
+    if (skillName === 'JavaScript') return 3;
+    return actualRating;
+  }
+
+  /** Minimum radius so the longest word / line block fits at ~mono widths (narrow static layout). */
+  function minRadiusForLabel(skillName: string, canvasW: number): number {
+    const words = skillName.trim().split(/\s+/);
+    const longest = Math.max(1, ...words.map((x) => x.length));
+    const lineCount = words.length;
+    const fs = 10;
+    const halfW = (longest * fs * 0.52) / 2 + 10;
+    const halfH = (lineCount * fs * 1.2) / 2 + 8;
+    return Math.min(canvasW * 0.22, Math.max(halfW, halfH, 14));
+  }
+
+  /**
+   * Narrow only: stacked sections (one per category), each a full-width grid.
+   * Seven anchor points on one canvas packed every cluster into the same space → heavy overlap.
+   */
+  function computeStaticMobileLayout(w: number): {
+    nodes: any[];
+    height: number;
+    sectionLabels: { name: string; labelColor: string; x: number; y: number; fontSize: number }[];
+  } {
+    const insetLeft = 14;
+    const insetRight = 14;
+    const insetTop = 24;
+    const insetBottom = 76;
+    const innerW = Math.max(100, w - insetLeft - insetRight);
+    const mobileScale = Math.min(0.8, Math.max(0.58, w / 420));
+    const sectionLabels: { name: string; labelColor: string; x: number; y: number; fontSize: number }[] =
+      [];
+    /** Tighten vertical/horizontal packing on mobile (~10% less spacing). */
+    const sp = 0.9;
+    /** Space reserved above each cluster for the category caption. */
+    const labelSlot = Math.round(22 * sp);
+
+    function rawR(catName: string, skill: { name: string; rating: number }): number {
+      const effRating = mobileRadiusRating(catName, skill.name, skill.rating);
+      const baseR = radiusFromTier(catName, skill.name, effRating);
+      const genomicBase = ratingToRadius[3] || 30;
+      const genomicAdjusted = genomicBase * (genomicSizeAdjustments[skill.name] || 1);
+      const raw = catName === 'Genomic Resources' ? genomicAdjusted : baseR;
+      return raw * mobileScale;
+    }
+
+    const sectionGap = Math.round(32 * sp);
+    let sectionY = insetTop;
+    const out: any[] = [];
+    const cellGap = Math.round(12 * sp);
+    const edgePad = Math.max(2, Math.floor(3 * sp));
+
+    for (const cat of skillCategories) {
+      const nl = cat.name.length;
+      const fontSize =
+        nl > 26 ? 7.5 : nl > 20 ? 8.25 : nl > 15 ? 8.75 : 9.5;
+      sectionLabels.push({
+        name: cat.name,
+        labelColor: cat.labelColor,
+        x: insetLeft + 2,
+        y: sectionY + 11,
+        fontSize
+      });
+      sectionY += labelSlot;
+
+      const skills = cat.skills;
+      const n = skills.length;
+      let radii = skills.map((s) => Math.max(rawR(cat.name, s), minRadiusForLabel(s.name, w)));
+
+      for (let attempt = 0; attempt < 14; attempt++) {
+        const maxR = Math.max(...radii, 11);
+        const colsTry = Math.min(n, Math.max(1, Math.floor(innerW / (2 * maxR + cellGap))));
+        const cellWTry = innerW / Math.max(colsTry, 1);
+        const tight = radii.some((r) => cellWTry < 2 * r + cellGap - 0.5);
+        if (!tight) break;
+        radii = radii.map((r) => Math.max(11, r * 0.93));
+      }
+
+      const maxR = Math.max(...radii, 11);
+      let cols = Math.min(n, Math.max(1, Math.floor(innerW / (2 * maxR + cellGap))));
+      if (n <= 1) cols = 1;
+      const cellW = innerW / Math.max(cols, 1);
+      const rows = Math.ceil(n / cols);
+
+      const rowHeights: number[] = [];
+      for (let row = 0; row < rows; row++) {
+        let rh = cellGap;
+        for (let col = 0; col < cols; col++) {
+          const si = row * cols + col;
+          if (si >= n) break;
+          const r = radii[si];
+          const lineCount = skills[si].name.trim().split(/\s+/).length;
+          const fs = r > 28 ? 11.25 : r > 22 ? 10.25 : 9.25;
+          const textBlock = lineCount * fs * 1.2;
+          rh = Math.max(rh, 2 * r + Math.max(Math.round(10 * sp), textBlock - r * 1.05));
+        }
+        rowHeights.push(rh);
+      }
+
+      for (let si = 0; si < n; si++) {
+        const col = si % cols;
+        const row = Math.floor(si / cols);
+        let rowOff = 0;
+        for (let rr = 0; rr < row; rr++) rowOff += rowHeights[rr];
+        const cx = insetLeft + (col + 0.5) * cellW;
+        const cy = sectionY + rowOff + rowHeights[row] / 2;
+        const r = radii[si];
+        const xMin = insetLeft + r + edgePad;
+        const xMax = w - insetRight - r - edgePad;
+        const yMin = sectionY + rowOff + r + edgePad;
+        const yMax = sectionY + rowOff + rowHeights[row] - r - edgePad;
+        const x = Math.max(xMin, Math.min(xMax, cx));
+        const y = Math.max(yMin, Math.min(yMax, cy));
+        out.push({
+          id: `${cat.name}-${skills[si].name}`,
+          skill: skills[si].name,
+          rating: skills[si].rating,
+          category: cat.name,
+          color: cat.color,
+          targetX: x,
+          targetY: y,
+          x,
+          y,
+          r,
+          vx: 0,
+          vy: 0
+        });
+      }
+
+      sectionY += rowHeights.reduce((a, h) => a + h, 0) + sectionGap;
+    }
+
+    const height = Math.max(Math.ceil(sectionY + insetBottom), 520);
+    return { nodes: out, height, sectionLabels };
+  }
+
   function buildNodes(w: number, h: number) {
     const result: any[] = [];
     const narrow = w < narrowBreakpoint;
     const positions = narrow ? clusterPositionsNarrow : clusterPositions;
-    const rScale = radiusScale(w);
     const tgtJ = narrow ? 12 : 40;
     const initJ = narrow ? 32 : 100;
     const inset = chartInsets(w, h, narrow);
@@ -88,17 +259,7 @@
           const slot = si % perRow;
           cxUse = cx + (slot - (perRow - 1) / 2) * 10;
         }
-        const baseR = ratingToRadius[skill.rating] || 18;
-        const genomicBase = ratingToRadius[3] || 30;
-        const genomicSizeAdjustments: Record<string, number> = {
-          GEO: 1.2,
-          Ensembl: 1.2,
-          ENA: 0.65,
-          'WashU Epigenome Browser': 0.8
-        };
-        const genomicAdjusted = genomicBase * (genomicSizeAdjustments[skill.name] || 1);
-        const rawR = cat.name === 'Genomic Resources' ? genomicAdjusted : baseR;
-        const r = rawR * rScale;
+        const r = bubbleRadius(cat.name, skill, w);
         result.push({
           id: `${cat.name}-${skill.name}`, skill: skill.name,
           rating: skill.rating, category: cat.name, color: cat.color,
@@ -154,52 +315,67 @@
     function handleResize() {
       if (svgEl?.parentElement) {
         width = svgEl.parentElement.clientWidth;
-        const narrow = width < narrowBreakpoint;
-        height = narrow
-          ? Math.max(
-              900,
-              Math.min(
-                Math.round(width * 1.75),
-                typeof window !== 'undefined' ? Math.round(window.innerHeight * 0.88) : 1040
-              )
-            )
-          : Math.max(680, width * 0.78);
+        if (width >= narrowBreakpoint) {
+          height = Math.max(680, width * 0.78);
+        }
+        /* Narrow SVG height comes from computeStaticMobileLayout (stacked categories). */
       }
     }
-    handleResize();
-    nodes = buildNodes(width, height);
-    simulation = forceSimulation(nodes)
-      .alphaDecay(0.008)
-      .on('tick', () => {
-        const narrow = width < narrowBreakpoint;
-        if (narrow) {
-          const ins = chartInsets(width, height, true);
-          for (const node of nodes) {
-            node.x = Math.max(
-              node.r + ins.left,
-              Math.min(width - node.r - ins.right, node.x)
-            );
-            node.y = Math.max(
-              node.r + ins.top,
-              Math.min(height - node.r - ins.bottom, node.y)
-            );
-          }
-        }
-        nodes = [...nodes];
-      });
-    applySimulationForces(width);
-    simulation.alpha(1).restart();
 
-    window.addEventListener('resize', () => {
+    function isNarrow() {
+      return width < narrowBreakpoint;
+    }
+
+    function applyLayout() {
       handleResize();
+      if (isNarrow()) {
+        if (simulation) {
+          simulation.stop();
+          simulation = null;
+        }
+        const { nodes: next, height: nh, sectionLabels } = computeStaticMobileLayout(width);
+        height = nh;
+        nodes = next;
+        mobileSectionLabels = sectionLabels;
+        return;
+      }
+
+      mobileSectionLabels = [];
+
+      const prev = nodes;
       const updated = buildNodes(width, height);
-      updated.forEach((n, i) => { if (nodes[i]) { n.x = nodes[i].x; n.y = nodes[i].y; } });
+      if (prev.length && simulation) {
+        updated.forEach((n, i) => {
+          const p = prev[i];
+          if (p && n.id === p.id) {
+            n.x = p.x;
+            n.y = p.y;
+          }
+        });
+      }
       nodes = updated;
-      simulation.nodes(nodes);
+
+      const createdSim = !simulation;
+      if (!simulation) {
+        simulation = forceSimulation(nodes)
+          .alphaDecay(0.008)
+          .on('tick', () => {
+            nodes = [...nodes];
+          });
+      } else {
+        simulation.nodes(nodes);
+      }
       applySimulationForces(width);
-      simulation.alpha(0.35).restart();
-    });
-    return () => simulation.stop();
+      simulation.alpha(createdSim ? 1 : 0.35).restart();
+    }
+
+    applyLayout();
+
+    window.addEventListener('resize', applyLayout);
+    return () => {
+      simulation?.stop();
+      window.removeEventListener('resize', applyLayout);
+    };
   });
 
   function handleMouseMove(e: MouseEvent) {
@@ -294,10 +470,34 @@
     </g>
     {/if}
 
+    {#if narrowLayout}
+      <g class="mobile-cluster-labels">
+        {#each mobileSectionLabels as lab}
+          <text
+            x={lab.x}
+            y={lab.y}
+            text-anchor="start"
+            fill={lab.labelColor}
+            font-size={lab.fontSize}
+            font-family="var(--font-display)"
+            font-weight="600"
+            letter-spacing="0.08em"
+            style="text-transform: uppercase;"
+            opacity="0.88"
+          >{lab.name}</text>
+        {/each}
+      </g>
+    {/if}
+
     <!-- Skill bubbles -->
     {#each nodes as node}
       {@const labelWords = node.skill.trim().split(/\s+/)}
-      {@const fsNarrow = node.r > 32 ? 13 : node.r > 24 ? 11.5 : 10}
+      {@const longestWord = Math.max(1, ...labelWords.map((x: string) => x.length))}
+      {@const fsNarrowBase = node.r > 32 ? 12 : node.r > 24 ? 10.5 : 9.5}
+      {@const fsNarrow = Math.max(
+        7.8,
+        Math.min(fsNarrowBase, (node.r * 1.42) / Math.max(longestWord * 0.5, 0.01))
+      )}
       {@const fsWide = node.r > 32 ? 13 : node.r > 22 ? 11 : 9.5}
       {@const fsNum = narrowLayout ? fsNarrow : fsWide}
       {@const linePx = fsNum * 1.14}
@@ -330,7 +530,7 @@
     {/each}
   </svg>
 
-  <div class="experience-legend" aria-hidden="true">
+  <div class="experience-legend experience-legend--chart" aria-hidden="true">
     <svg class="experience-legend__circles" viewBox="-2 -18 154 42" width="154" height="42">
       <!-- Larger left → smaller right; r=7 unchanged, others scaled up; baseline y = 22 -->
       <circle cx="21" cy="3" r="19" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" stroke-dasharray="5 4" />
@@ -396,12 +596,12 @@
       width: 100%;
       box-sizing: border-box;
       margin-top: -1.2rem;
-      padding-bottom: 3.55rem;
+      padding-bottom: 1.25rem;
     }
 
-    /* Higher than chart shift (~0.5rem nudge + inset) so legend clears bubbles */
-    .experience-legend {
-      bottom: 3.55rem;
+    /* Legend lives beside the section title in Skills.svelte on mobile */
+    .experience-legend--chart {
+      display: none;
     }
   }
 </style>

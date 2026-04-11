@@ -1,12 +1,29 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import '../app.css';
   import Nav from '$lib/components/Nav.svelte';
   import Starfield from '$lib/components/Starfield.svelte';
 
   let { children } = $props();
+
+  /** Matches Starfield’s narrow breakpoint: skip canvas entirely on phones (avoids jank / layout glitches). */
+  const starfieldMinWidthPx = 769;
+  let showStarfield = $state(false);
+
+  onMount(() => {
+    const mq = window.matchMedia(`(min-width: ${starfieldMinWidthPx}px)`);
+    const sync = () => {
+      showStarfield = mq.matches;
+    };
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  });
 </script>
 
-<Starfield />
+{#if showStarfield}
+  <Starfield />
+{/if}
 
 <div class="page-content">
   <header>

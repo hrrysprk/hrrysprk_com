@@ -20,8 +20,8 @@
   const ratingToRadius: Record<number, number> = { 1: 18, 2: 24, 3: 30, 4: 38, 5: 46 };
 
   const clusterPositions = [
-    { xFrac: 0.43, yFrac: 0.03 },  // Programming — nudged slightly toward center
-    { xFrac: 0.86, yFrac: 0.10 },  // Bioinformatics — moved farther outward
+    { xFrac: 0.388, yFrac: -0.04 },  // Programming — slightly above band (branch, label, bubbles share anchor)
+    { xFrac: 0.86, yFrac: 0.04 },  // Bioinformatics — nudged upward (branch + bubbles share anchor)
     { xFrac: 0.96, yFrac: 0.55 },  // Genomic Resources — right middle
     { xFrac: 0.72, yFrac: 0.89 },  // ML & Data — moved farther outward
     { xFrac: 0.14, yFrac: 0.22 },  // Cloud & Infra — nudged slightly toward center
@@ -88,7 +88,11 @@
     const genomicBase = ratingToRadius[3] || 30;
     const genomicAdjusted = genomicBase * (genomicSizeAdjustments[skill.name] || 1);
     const rawR = catName === 'Genomic Resources' ? genomicAdjusted : baseR;
-    return rawR * rScale;
+    let r = rawR * rScale;
+    if (w >= narrowBreakpoint && (skill.name === 'Perl' || skill.name === 'SQL')) {
+      r *= 0.9;
+    }
+    return r;
   }
 
   /**
@@ -259,14 +263,20 @@
           const slot = si % perRow;
           cxUse = cx + (slot - (perRow - 1) / 2) * 10;
         }
+        let tgt = tgtJ;
+        let init = initJ;
+        if (!narrow && cat.name === 'Programming') {
+          tgt = Math.round(tgtJ * 1.38);
+          init = Math.round(initJ * 1.28);
+        }
         const r = bubbleRadius(cat.name, skill, w);
         result.push({
           id: `${cat.name}-${skill.name}`, skill: skill.name,
           rating: skill.rating, category: cat.name, color: cat.color,
-          targetX: cxUse + (Math.random() - 0.5) * tgtJ,
-          targetY: cyUse + (Math.random() - 0.5) * tgtJ,
-          x: cxUse + (Math.random() - 0.5) * initJ,
-          y: cyUse + (Math.random() - 0.5) * initJ, r
+          targetX: cxUse + (Math.random() - 0.5) * tgt,
+          targetY: cyUse + (Math.random() - 0.5) * tgt,
+          x: cxUse + (Math.random() - 0.5) * init,
+          y: cyUse + (Math.random() - 0.5) * init, r
         });
       });
     });
@@ -288,9 +298,10 @@
   }
 
   function getLabelStartOffset(name: string) {
-    // Pull these two labels toward the center so text avoids nearby bubbles.
-    if (name === 'Programming' || name === 'Cloud & Infra') return '62%';
-    if (name === 'Bioinformatics') return '42%';
+    /* Path runs outer→center on the left (higher % = nearer center); center→outer on the right (lower % = nearer center). */
+    if (name === 'Programming') return '64%';
+    if (name === 'Cloud & Infra') return '62%';
+    if (name === 'Bioinformatics') return '38%';
     return '45%';
   }
 
@@ -301,7 +312,10 @@
     if (!simulation) return;
     const narrow = w < narrowBreakpoint;
     simulation.alphaDecay(narrow ? 0.0045 : 0.008);
-    const coll = forceCollide((d: any) => d.r + (narrow ? 11 : 2))
+    const coll = forceCollide((d: any) => {
+      const gap = narrow ? 11 : d.category === 'Programming' ? 4.25 : 2;
+      return d.r + gap;
+    })
       .strength(narrow ? 1 : 0.8)
       .iterations(narrow ? 5 : 1);
     simulation
@@ -415,6 +429,14 @@
     {#if !narrowLayout}
     <defs>
       {#each catTargets as cat, i}
+        {@const dx = cat.x - width / 2}
+        {@const dy = cat.y - height / 2}
+        {@const dlen = Math.hypot(dx, dy) || 1}
+        {@const tipExt = cat.name === 'Programming' ? 36 : 0}
+        {@const tipX = cat.x + (dx / dlen) * tipExt}
+        {@const tipY = cat.y + (dy / dlen) * tipExt}
+        {@const qx = width / 2 + (cat.x - width / 2) * 0.4}
+        {@const qy = height / 2 + (cat.y - height / 2) * 0.15}
         <marker id="arrow-{i}" viewBox="0 0 10 6" refX="10" refY="3"
           markerWidth="10" markerHeight="6" orient="auto">
           <path d="M0,0 L10,3 L0,6 Z" fill={cat.labelColor} opacity="0.9" />
@@ -422,20 +444,20 @@
         <!-- Reverse path for left-side clusters so text reads left-to-right -->
         {#if cat.x < width / 2}
           <path id="branch-{i}"
-            d="M{cat.x},{cat.y} Q{width/2 + (cat.x - width/2)*0.4},{height/2 + (cat.y - height/2)*0.15} {width/2},{height/2}"
+            d="M{tipX},{tipY} Q{qx},{qy} {width / 2},{height / 2}"
             fill="none"
           />
           <path id="branch-draw-{i}"
-            d="M{width/2},{height/2} Q{width/2 + (cat.x - width/2)*0.4},{height/2 + (cat.y - height/2)*0.15} {cat.x},{cat.y}"
+            d="M{width / 2},{height / 2} Q{qx},{qy} {tipX},{tipY}"
             fill="none"
           />
         {:else}
           <path id="branch-{i}"
-            d="M{width/2},{height/2} Q{width/2 + (cat.x - width/2)*0.4},{height/2 + (cat.y - height/2)*0.15} {cat.x},{cat.y}"
+            d="M{width / 2},{height / 2} Q{qx},{qy} {tipX},{tipY}"
             fill="none"
           />
           <path id="branch-draw-{i}"
-            d="M{width/2},{height/2} Q{width/2 + (cat.x - width/2)*0.4},{height/2 + (cat.y - height/2)*0.15} {cat.x},{cat.y}"
+            d="M{width / 2},{height / 2} Q{qx},{qy} {tipX},{tipY}"
             fill="none"
           />
         {/if}
@@ -450,7 +472,9 @@
       />
       <text font-size="13" fill={cat.labelColor} opacity="0.85"
         font-family="var(--font-display)" font-weight="600"
-        letter-spacing="0.04em" dy="-8" style="text-transform: uppercase;">
+        letter-spacing="0.04em"
+        dy={cat.name === 'Programming' ? '-9' : '-8'}
+        style="text-transform: uppercase;">
         <textPath href="#branch-{i}" startOffset={getLabelStartOffset(cat.name)} text-anchor="middle">
           {cat.name}
         </textPath>

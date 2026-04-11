@@ -66,6 +66,26 @@
     return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
   }
 
+  /** Vertical anchor for rotated marker labels (desktop Canada needs room above y=0 once text is ~90px half-span). */
+  function markerLabelY(
+    marker: { label: string },
+    m: { top: number },
+    mobile: boolean
+  ): number {
+    const isCanada = marker.label.includes('CANADA');
+    const canadaMobile = isCanada && mobile;
+    const base =
+      m.top +
+      (mobile ? 26 : 40) -
+      (isCanada ? (mobile ? 14 : 24) : mobile ? 18 : 24) +
+      (canadaMobile ? 12 : 0);
+    if (!mobile && isCanada) {
+      /* High floor so we can shift the label upward in SVG without clipping the top of the rotated string. */
+      return Math.max(base, 108);
+    }
+    return base;
+  }
+
   onMount(() => {
     function handleResize() {
       const parent = svgEl?.parentElement;
@@ -92,7 +112,13 @@
   </div>
 
   <div class="chart-scroll">
-  <svg bind:this={svgEl} {width} height={chartHeight} viewBox="0 0 {width} {chartHeight}">
+  <svg
+    bind:this={svgEl}
+    {width}
+    height={chartHeight}
+    viewBox="0 0 {width} {chartHeight}"
+    overflow="visible"
+  >
     <!-- Year gridlines -->
     {#each Array.from({ length: maxYear - minYear + 1 }, (_, i) => minYear + i) as year}
       {#if showYearTick(year)}
@@ -114,64 +140,6 @@
         transform="rotate(-45, {xScale(`${year}-01-01`)}, {chartHeight - margin.bottom + 8})"
       >{year}</text>
       {/if}
-    {/each}
-
-    <!-- Marker lines (COVID, relocation) — vertical dashed with inline label -->
-    {#each lexisMarkers as marker}
-      {@const markerX = xScale(marker.date)}
-      {@const isCanadaMarker = marker.label.includes('CANADA')}
-      {@const canadaMobile = isCanadaMarker && ganttMobile}
-      {@const labelY =
-        margin.top +
-        (ganttMobile ? 26 : 40) -
-        (marker.label.includes('CANADA') ? (ganttMobile ? 14 : 48) : ganttMobile ? 18 : 24) +
-        (canadaMobile ? 12 : 0)}
-      {@const labelHalf = canadaMobile ? 9 : 12}
-      <!-- Top dashes — from chart top to label -->
-      <line
-        x1={markerX}
-        y1={margin.top}
-        x2={markerX}
-        y2={labelY - labelHalf}
-        stroke="#ff2020"
-        stroke-width="1"
-        stroke-dasharray="6 4"
-        opacity="0.7"
-      />
-      {#if isCanadaMarker}
-        <rect
-          x={markerX - (canadaMobile ? 54 : 102)}
-          y={labelY - labelHalf}
-          width={canadaMobile ? 108 : 204}
-          height={canadaMobile ? 18 : 24}
-          rx={canadaMobile ? 3 : 4}
-          fill="var(--color-bg)"
-          transform="rotate(-90, {markerX}, {labelY})"
-        />
-      {/if}
-      <!-- Label (rotated vertical) -->
-      <text
-        x={markerX}
-        y={labelY}
-        fill="#ff2020"
-        font-size={canadaMobile ? '10.5' : isCanadaMarker ? '17' : '18'}
-        font-weight="700"
-        opacity="0.9"
-        text-anchor="middle"
-        font-family="var(--font-mono)"
-        transform="rotate(-90, {markerX}, {labelY})"
-      >{#if marker.label.includes('CANADA')}<tspan font-weight="400">relocated to</tspan><tspan font-weight="900" dx={canadaMobile ? '2' : '4'}>CANADA</tspan>{:else}{marker.label}{/if}</text>
-      <!-- Bottom dashes (below label to chart bottom) -->
-      <line
-        x1={markerX}
-        y1={labelY + labelHalf}
-        x2={markerX}
-        y2={chartHeight - margin.bottom}
-        stroke="#ff2020"
-        stroke-width="1"
-        stroke-dasharray="6 4"
-        opacity="0.7"
-      />
     {/each}
 
     <!-- Gantt bars -->
@@ -240,6 +208,64 @@
         >{formatDate(entry.startDate)} — {formatDate(entry.endDate)}</text>
       {/if}
     {/each}
+
+    <!-- Markers after bars so rotated labels are not covered by bar fills -->
+    {#each lexisMarkers as marker}
+      {@const markerX = xScale(marker.date)}
+      {@const isCanadaMarker = marker.label.includes('CANADA')}
+      {@const canadaMobile = isCanadaMarker && ganttMobile}
+      {@const canadaBothUp = isCanadaMarker ? (canadaMobile ? 14 : 18) : 0}
+      {@const labelY = markerLabelY(marker, margin, ganttMobile) - canadaBothUp}
+      {@const labelHalf = canadaMobile ? 9 : 12}
+      {@const canadaRectLift = canadaMobile ? 10 : 16}
+      <!-- Top dashes — from chart top to label -->
+      <line
+        x1={markerX}
+        y1={margin.top}
+        x2={markerX}
+        y2={labelY - labelHalf}
+        stroke="#ff2020"
+        stroke-width="1"
+        stroke-dasharray="6 4"
+        opacity="0.7"
+      />
+      {#if isCanadaMarker}
+        <!-- Pill behind text only: translated up vs the label anchor so it does not sit on top of the “CANADA” glyphs. -->
+        <rect
+          x={markerX - (canadaMobile ? 54 : 124)}
+          y={labelY - labelHalf}
+          width={canadaMobile ? 108 : 260}
+          height={canadaMobile ? 18 : 26}
+          rx={canadaMobile ? 3 : 4}
+          fill="var(--color-bg)"
+          transform="translate(0, {-canadaRectLift}) rotate(-90, {markerX}, {labelY})"
+        />
+      {/if}
+      <!-- Label (rotated vertical) -->
+      <text
+        x={markerX}
+        y={labelY}
+        fill="#ff2020"
+        font-size={canadaMobile ? '10.5' : isCanadaMarker ? '17' : '18'}
+        font-weight="700"
+        opacity="0.9"
+        text-anchor="middle"
+        font-family="var(--font-mono)"
+        clip-path="none"
+        transform="rotate(-90, {markerX}, {labelY})"
+      >{#if marker.label.includes('CANADA')}<tspan font-weight="400">relocated to</tspan><tspan font-weight="900" dx="12">CANADA</tspan>{:else}{marker.label}{/if}</text>
+      <!-- Bottom dashes (below label to chart bottom) -->
+      <line
+        x1={markerX}
+        y1={labelY + labelHalf}
+        x2={markerX}
+        y2={chartHeight - margin.bottom}
+        stroke="#ff2020"
+        stroke-width="1"
+        stroke-dasharray="6 4"
+        opacity="0.7"
+      />
+    {/each}
   </svg>
   </div>
   <p class="disclaimer">Displaying relevant education, research, and professional experience.</p>
@@ -285,6 +311,8 @@
 
   .chart-scroll {
     width: 100%;
+    /* Vertical padding: overflow-x: auto makes overflow-y compute to auto in browsers, which was clipping the rotated marker text. */
+    padding-block: 2.25rem;
     overflow-x: auto;
     overflow-y: visible;
     -webkit-overflow-scrolling: touch;

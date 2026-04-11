@@ -11,6 +11,8 @@
   let mouseY = $state(-9999);
 
   const pad = 50;
+  /** Extra top inset so tall bubbles are less likely to leave the viewBox (force can push nodes up). */
+  const padTop = pad + 52;
   const ratingToRadius: Record<number, number> = { 1: 18, 2: 24, 3: 30, 4: 38, 5: 46 };
 
   const clusterPositions = [
@@ -23,13 +25,68 @@
     { xFrac: 0.22, yFrac: 0.85 },  // Statistics — bottom left
   ];
 
+  /**
+   * Narrow viewports: one band per category on the Y axis so clusters don’t stack
+   * on the same row (main cause of overlap on phones).
+   */
+  const clusterPositionsNarrow = [
+    { xFrac: 0.38, yFrac: 0.05 },
+    { xFrac: 0.82, yFrac: 0.19 },
+    { xFrac: 0.22, yFrac: 0.33 },
+    { xFrac: 0.78, yFrac: 0.46 },
+    { xFrac: 0.2, yFrac: 0.6 },
+    { xFrac: 0.7, yFrac: 0.74 },
+    { xFrac: 0.5, yFrac: 0.88 },
+  ];
+
+  function chartInsets(_w: number, _h: number, narrow: boolean) {
+    if (!narrow) {
+      return { left: pad, right: pad, top: padTop, bottom: pad };
+    }
+    return {
+      left: 4,
+      right: 36,
+      top: pad + 10,
+      bottom: pad + 34
+    };
+  }
+
+  const narrowBreakpoint = 600;
+
+  let narrowLayout = $derived(width < narrowBreakpoint);
+
+  function radiusScale(w: number): number {
+    if (w >= narrowBreakpoint) return 1;
+    /* Larger bubbles on phones; still capped so labels fit */
+    return Math.min(1.04, Math.max(0.9, 0.78 + w / 780));
+  }
+
   function buildNodes(w: number, h: number) {
     const result: any[] = [];
+    const narrow = w < narrowBreakpoint;
+    const positions = narrow ? clusterPositionsNarrow : clusterPositions;
+    const rScale = radiusScale(w);
+    const tgtJ = narrow ? 12 : 40;
+    const initJ = narrow ? 32 : 100;
+    const inset = chartInsets(w, h, narrow);
+    const innerH = h - inset.top - inset.bottom;
     skillCategories.forEach((cat, ci) => {
-      const pos = clusterPositions[ci] || { xFrac: 0.5, yFrac: 0.5 };
-      const cx = pad + (w - pad * 2) * pos.xFrac;
-      const cy = pad + (h - pad * 2) * pos.yFrac;
-      cat.skills.forEach((skill) => {
+      const pos = positions[ci] || { xFrac: 0.5, yFrac: 0.5 };
+      const cx = inset.left + (w - inset.left - inset.right) * pos.xFrac;
+      const cy = inset.top + innerH * pos.yFrac;
+      const nSkills = cat.skills.length;
+      cat.skills.forEach((skill, si) => {
+        let cxUse = cx;
+        let cyUse = cy;
+        if (narrow && nSkills > 4) {
+          const rows = Math.min(5, Math.max(2, Math.ceil(nSkills / 4)));
+          const perRow = Math.ceil(nSkills / rows);
+          const row = Math.min(rows - 1, Math.floor(si / perRow));
+          const step = Math.min(32, innerH * 0.038);
+          cyUse = cy + (row - (rows - 1) / 2) * step;
+          const slot = si % perRow;
+          cxUse = cx + (slot - (perRow - 1) / 2) * 10;
+        }
         const baseR = ratingToRadius[skill.rating] || 18;
         const genomicBase = ratingToRadius[3] || 30;
         const genomicSizeAdjustments: Record<string, number> = {
@@ -39,14 +96,15 @@
           'WashU Epigenome Browser': 0.8
         };
         const genomicAdjusted = genomicBase * (genomicSizeAdjustments[skill.name] || 1);
-        const r = cat.name === 'Genomic Resources' ? genomicAdjusted : baseR;
+        const rawR = cat.name === 'Genomic Resources' ? genomicAdjusted : baseR;
+        const r = rawR * rScale;
         result.push({
           id: `${cat.name}-${skill.name}`, skill: skill.name,
           rating: skill.rating, category: cat.name, color: cat.color,
-          targetX: cx + (Math.random() - 0.5) * 40,
-          targetY: cy + (Math.random() - 0.5) * 40,
-          x: cx + (Math.random() - 0.5) * 100,
-          y: cy + (Math.random() - 0.5) * 100, r
+          targetX: cxUse + (Math.random() - 0.5) * tgtJ,
+          targetY: cyUse + (Math.random() - 0.5) * tgtJ,
+          x: cxUse + (Math.random() - 0.5) * initJ,
+          y: cyUse + (Math.random() - 0.5) * initJ, r
         });
       });
     });
@@ -54,12 +112,15 @@
   }
 
   function getCategoryTargets(w: number, h: number) {
+    const narrow = w < narrowBreakpoint;
+    const positions = narrow ? clusterPositionsNarrow : clusterPositions;
+    const inset = chartInsets(w, h, narrow);
     return skillCategories.map((cat, i) => {
-      const pos = clusterPositions[i] || { xFrac: 0.5, yFrac: 0.5 };
+      const pos = positions[i] || { xFrac: 0.5, yFrac: 0.5 };
       return {
         name: cat.name, color: cat.color, labelColor: cat.labelColor,
-        x: pad + (w - pad * 2) * pos.xFrac,
-        y: pad + (h - pad * 2) * pos.yFrac
+        x: inset.left + (w - inset.left - inset.right) * pos.xFrac,
+        y: inset.top + (h - inset.top - inset.bottom) * pos.yFrac
       };
     });
   }
@@ -74,37 +135,59 @@
   let simulation: any;
   let catTargets = $derived(getCategoryTargets(width, height));
 
-  function getCategoryCenters() {
-    const centers: Record<string, { x: number; y: number; count: number }> = {};
-    for (const node of nodes) {
-      if (!centers[node.category]) centers[node.category] = { x: 0, y: 0, count: 0 };
-      centers[node.category].x += node.x;
-      centers[node.category].y += node.y;
-      centers[node.category].count += 1;
-    }
-    return Object.entries(centers).map(([name, c]) => ({
-      name, x: c.x / c.count, y: c.y / c.count,
-      color: skillCategories.find(cat => cat.name === name)?.color || '#888'
-    }));
+  function applySimulationForces(w: number) {
+    if (!simulation) return;
+    const narrow = w < narrowBreakpoint;
+    simulation.alphaDecay(narrow ? 0.0045 : 0.008);
+    const coll = forceCollide((d: any) => d.r + (narrow ? 10 : 2))
+      .strength(narrow ? 1 : 0.8)
+      .iterations(narrow ? 5 : 1);
+    simulation
+      .force('x', forceX((d: any) => d.targetX).strength(narrow ? 0.1 : 0.06))
+      .force('y', forceY((d: any) => d.targetY).strength(narrow ? 0.18 : 0.06))
+      .force('collide', coll)
+      .force('charge', forceManyBody().strength(narrow ? -0.9 : -3));
   }
-  let categoryCenters = $derived(getCategoryCenters());
 
   onMount(() => {
     function handleResize() {
       if (svgEl?.parentElement) {
         width = svgEl.parentElement.clientWidth;
-        height = Math.max(680, width * 0.78);
+        const narrow = width < narrowBreakpoint;
+        height = narrow
+          ? Math.max(
+              900,
+              Math.min(
+                Math.round(width * 1.75),
+                typeof window !== 'undefined' ? Math.round(window.innerHeight * 0.88) : 1040
+              )
+            )
+          : Math.max(680, width * 0.78);
       }
     }
     handleResize();
     nodes = buildNodes(width, height);
     simulation = forceSimulation(nodes)
-      .force('x', forceX((d: any) => d.targetX).strength(0.06))
-      .force('y', forceY((d: any) => d.targetY).strength(0.06))
-      .force('collide', forceCollide((d: any) => d.r + 2).strength(0.8))
-      .force('charge', forceManyBody().strength(-3))
       .alphaDecay(0.008)
-      .on('tick', () => { nodes = [...nodes]; });
+      .on('tick', () => {
+        const narrow = width < narrowBreakpoint;
+        if (narrow) {
+          const ins = chartInsets(width, height, true);
+          for (const node of nodes) {
+            node.x = Math.max(
+              node.r + ins.left,
+              Math.min(width - node.r - ins.right, node.x)
+            );
+            node.y = Math.max(
+              node.r + ins.top,
+              Math.min(height - node.r - ins.bottom, node.y)
+            );
+          }
+        }
+        nodes = [...nodes];
+      });
+    applySimulationForces(width);
+    simulation.alpha(1).restart();
 
     window.addEventListener('resize', () => {
       handleResize();
@@ -112,14 +195,14 @@
       updated.forEach((n, i) => { if (nodes[i]) { n.x = nodes[i].x; n.y = nodes[i].y; } });
       nodes = updated;
       simulation.nodes(nodes);
-      simulation.force('x', forceX((d: any) => d.targetX).strength(0.06));
-      simulation.force('y', forceY((d: any) => d.targetY).strength(0.06));
-      simulation.alpha(0.3).restart();
+      applySimulationForces(width);
+      simulation.alpha(0.35).restart();
     });
     return () => simulation.stop();
   });
 
   function handleMouseMove(e: MouseEvent) {
+    if (width < narrowBreakpoint) return;
     const rect = svgEl.getBoundingClientRect();
     mouseX = e.clientX - rect.left;
     mouseY = e.clientY - rect.top;
@@ -145,9 +228,14 @@
     bind:this={svgEl}
     width={width} height={height}
     viewBox="0 0 {width} {height}"
-    role="img" aria-label="Interactive skill bubble chart"
+    overflow={narrowLayout ? 'hidden' : 'visible'}
+    role="img"
+    aria-label={narrowLayout
+      ? 'Skill bubbles by category (color); larger bubbles mean more years of experience'
+      : 'Interactive skill bubble chart'}
     onmousemove={handleMouseMove} onmouseleave={handleMouseLeave}
   >
+    {#if !narrowLayout}
     <defs>
       {#each catTargets as cat, i}
         <marker id="arrow-{i}" viewBox="0 0 10 6" refX="10" refY="3"
@@ -191,8 +279,10 @@
         </textPath>
       </text>
     {/each}
+    {/if}
 
-    <!-- Root diamond — center (rendered after branches so it sits on top) -->
+    {#if !narrowLayout}
+    <!-- Root diamond — center (desktop only; hidden on narrow viewports) -->
     <g transform="translate({width / 2},{height / 2})">
       <rect x="-30" y="-30" width="60" height="60" rx="4"
         fill="var(--color-bg)" fill-opacity="0.7" stroke="var(--color-accent)" stroke-width="2"
@@ -201,6 +291,7 @@
         dominant-baseline="middle" font-family="var(--font-display)"
         font-weight="700" letter-spacing="0.05em">SKILLS</text>
     </g>
+    {/if}
 
     <!-- Skill bubbles -->
     {#each nodes as node}
@@ -210,27 +301,87 @@
           stroke={node.color} stroke-width="1.5" stroke-opacity="1" />
         <text x={node.x} y={node.y}
           fill="var(--color-text-primary)"
-          font-size={node.r > 32 ? '13' : node.r > 22 ? '11' : '9.5'}
+          font-size={narrowLayout
+            ? (node.r > 30 ? '12.5' : node.r > 22 ? '11' : '9.5')
+            : (node.r > 32 ? '13' : node.r > 22 ? '11' : '9.5')}
           text-anchor="middle" dominant-baseline="middle"
           font-family="var(--font-mono)" style="pointer-events: none;"
         >{node.skill}</text>
       </g>
     {/each}
   </svg>
+
+  <div class="experience-legend" aria-hidden="true">
+    <svg class="experience-legend__circles" viewBox="-2 -18 154 42" width="154" height="42">
+      <!-- Larger left → smaller right; r=7 unchanged, others scaled up; baseline y = 22 -->
+      <circle cx="21" cy="3" r="19" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" stroke-dasharray="5 4" />
+      <circle cx="61" cy="7" r="15" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" stroke-dasharray="5 4" />
+      <circle cx="94" cy="10" r="12" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" stroke-dasharray="5 4" />
+      <circle cx="121" cy="13" r="9" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" stroke-dasharray="5 4" />
+      <circle cx="143" cy="15" r="7" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" stroke-dasharray="5 4" />
+    </svg>
+    <p class="experience-legend__label">Years of experience</p>
+  </div>
 </div>
 
 <style>
   .bubbles-wrapper {
+    position: relative;
     width: 100%;
     overflow: visible;
-    padding: 0;
+    padding: 0 0 4.25rem;
     transform: translateX(-2rem);
   }
   svg { width: 100%; height: auto; display: block; overflow: visible; }
 
+  .experience-legend {
+    position: absolute;
+    left: 0;
+    bottom: 0.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+    pointer-events: none;
+    max-width: min(100%, 15rem);
+  }
+
+  .experience-legend__circles {
+    width: 100%;
+    max-width: 12rem;
+    height: auto;
+    display: block;
+    opacity: 0.92;
+  }
+
+  .experience-legend__label {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(232, 232, 240, 0.72);
+    text-align: left;
+    line-height: 1.2;
+  }
+
   @media (max-width: 768px) {
     .bubbles-wrapper {
       transform: none;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .bubbles-wrapper {
+      width: 100%;
+      box-sizing: border-box;
+      margin-top: -0.35rem;
+      padding-bottom: 3.35rem;
+    }
+
+    .experience-legend {
+      bottom: 2.85rem;
     }
   }
 </style>

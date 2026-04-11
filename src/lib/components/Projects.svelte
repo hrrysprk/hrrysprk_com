@@ -128,12 +128,10 @@
     gap: 0.75rem;
   }
 
-  .featured-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
+  /* Mobile-first: one column so secondary cards are never squeezed four-wide */
+  .featured-grid,
   .secondary-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: 1fr;
   }
 
   .filters {
@@ -185,20 +183,33 @@
   }
 
   .featured-shell {
-    height: clamp(280px, 26vw, 330px);
+    height: auto;
+    min-height: clamp(232px, 56vw, 300px);
+    aspect-ratio: 16 / 10;
   }
 
   .secondary-shell {
-    height: clamp(220px, 24vw, 260px);
+    height: auto;
+    min-height: clamp(200px, 50vw, 248px);
+    aspect-ratio: 16 / 10;
   }
 
   @media (min-width: 640px) {
-    .featured-grid {
+    .featured-grid,
+    .secondary-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .secondary-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+    .featured-shell {
+      aspect-ratio: auto;
+      height: clamp(260px, 44vw, 310px);
+      min-height: 0;
+    }
+
+    .secondary-shell {
+      aspect-ratio: auto;
+      height: clamp(220px, 40vw, 255px);
+      min-height: 0;
     }
   }
 
@@ -210,15 +221,13 @@
     .secondary-grid {
       grid-template-columns: repeat(4, minmax(0, 1fr));
     }
-  }
-
-  @media (max-width: 900px) {
-    .featured-grid {
-      grid-template-columns: 1fr;
-    }
 
     .featured-shell {
-      height: clamp(260px, 55vw, 320px);
+      height: clamp(280px, 26vw, 330px);
+    }
+
+    .secondary-shell {
+      height: clamp(220px, 24vw, 260px);
     }
   }
 </style>

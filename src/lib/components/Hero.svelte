@@ -292,29 +292,93 @@
     }
   }
 
-  @media (max-width: 600px) {
+  @media (max-width: 640px) {
     .hero {
-      padding-inline: var(--space-sm);
+      padding-inline: max(var(--space-sm), env(safe-area-inset-left))
+        max(calc(var(--space-sm) + 2.85rem), env(safe-area-inset-right));
+      padding-top: max(0.35rem, env(safe-area-inset-top));
     }
 
     .hero-shell {
-      min-height: calc(100vh - 3rem);
+      top: 0;
+      min-height: calc(100svh - 2.75rem);
+      /* Keep copy out from under the fixed icon stack */
+      padding-right: 0.15rem;
+      box-sizing: border-box;
     }
 
     .roles {
       width: 100%;
-      gap: 0.3rem;
+      max-width: 100%;
+      padding-left: 0;
+      gap: 0.35rem;
+      transform: none;
     }
 
+    .role-row-1 .role-side,
+    .role-row-2 .role-side {
+      margin-left: 0;
+    }
+
+    /* Same optical size for grey + orange words; aligned on one line */
     .role-row {
       display: flex;
-      gap: 0.35rem;
+      flex-direction: row;
       flex-wrap: wrap;
+      align-items: center;
+      gap: 0.35rem 0.65rem;
+      width: 100%;
+    }
+
+    .role-row .role-main {
+      line-height: 0.88;
+      flex: 0 1 auto;
+    }
+
+    .role-row .role-side {
+      flex: 0 0 auto;
+      text-align: left;
+      width: auto;
+      line-height: 0.88;
+    }
+
+    .role {
+      font-size: clamp(2.45rem, 9.8vw, 3.35rem);
+      transform: scaleX(0.78) scaleY(1.1);
+      transform-origin: left center;
+    }
+
+    .role-researcher {
+      font-size: clamp(2.65rem, 10.5vw, 3.55rem);
+      transform: scaleX(0.78) scaleY(1.1);
+      transform-origin: left center;
+    }
+
+    .name-block {
+      transform: none;
+      padding: 0.35rem 0 clamp(1.5rem, 7vh, 3.25rem);
+      margin-top: 1rem;
+    }
+
+    .name-line {
+      transform: scaleX(0.74) scaleY(1.12);
+    }
+
+    .surname {
+      font-size: clamp(4.65rem, 22vw, 7rem);
+      top: 0;
+      line-height: 0.78;
+    }
+
+    .given {
+      font-size: clamp(4.25rem, 20vw, 6.5rem);
+      top: 0.1rem;
+      line-height: 0.78;
     }
 
     .floating-links {
       right: 0;
-      top: 38vh;
+      top: max(38vh, env(safe-area-inset-top));
     }
 
     .icon-link {
